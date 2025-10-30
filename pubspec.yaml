@@ -1,0 +1,44 @@
+name: forecast_app
+description: A minimal Flutter counter application
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI
+  cupertino_icons: ^1.0.2
+  fl_chart: ^0.66.0
+  
+  # State Management
+  flutter_riverpod: ^2.5.1
+  
+  # Navigation
+  go_router: ^14.6.2
+  
+  # Networking
+  dio: ^5.7.0
+  html: ^0.15.4
+  
+  # Storage
+  shared_preferences: ^2.2.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.2
+  
+  # Utils
+  intl: ^0.19.0
+  excel: ^4.0.3
+  logger: ^2.4.0
+  equatable: ^2.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
