@@ -19,42 +19,57 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // Красивый анимированный AppBar
+          // Легкий воздушный AppBar
           SliverAppBar(
             expandedHeight: appBarHeight,
             floating: false,
             pinned: true,
             backgroundColor: AppTheme.getSurface(context),
+            elevation: 0,
             flexibleSpace: FlexibleSpaceBar(
+              titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
               title: Text(
                 '1xForecast',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   fontSize: AppTheme.isMobile(context) ? 20 : 24,
-                  color: isDark ? Colors.white : AppTheme.textPrimaryLight,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
                 ),
               ),
               background: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: AppTheme.primaryGradient,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(32),
+                    bottomRight: Radius.circular(32),
+                  ),
                 ),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 40),
-                      Icon(
-                        Icons.sports_soccer,
-                        size: AppTheme.isMobile(context) ? 50 : 60,
-                        color: Colors.white.withOpacity(0.9),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Icon(
+                          Icons.sports_soccer,
+                          size: AppTheme.isMobile(context) ? 40 : 48,
+                          color: Colors.white,
+                        ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Text(
                         'FIFA FC24 4x4',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: AppTheme.isMobile(context) ? 14 : 16,
-                          fontWeight: FontWeight.w500,
+                          color: Colors.white.withOpacity(0.95),
+                          fontSize: AppTheme.isMobile(context) ? 13 : 15,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 1,
                         ),
                       ),
                     ],
@@ -64,29 +79,36 @@ class HomePage extends StatelessWidget {
             ),
             actions: [
               // Кнопка переключения темы
-              BlocBuilder<ThemeCubit, ThemeMode>(
-                builder: (context, themeMode) {
-                  return IconButton(
-                    icon: Icon(
-                      themeMode == ThemeMode.dark
-                          ? Icons.light_mode_rounded
-                          : Icons.dark_mode_rounded,
-                    ),
-                    tooltip: themeMode == ThemeMode.dark
-                        ? 'Светлая тема'
-                        : 'Тёмная тема',
-                    onPressed: () {
-                      context.read<ThemeCubit>().toggleTheme();
-                    },
-                  );
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: BlocBuilder<ThemeCubit, ThemeMode>(
+                  builder: (context, themeMode) {
+                    return IconButton(
+                      icon: Icon(
+                        themeMode == ThemeMode.dark
+                            ? Icons.light_mode_rounded
+                            : Icons.dark_mode_rounded,
+                        color: Colors.white,
+                      ),
+                      tooltip: themeMode == ThemeMode.dark
+                          ? 'Светлая тема'
+                          : 'Тёмная тема',
+                      onPressed: () {
+                        context.read<ThemeCubit>().toggleTheme();
+                      },
+                    );
+                  },
+                ),
               ),
-              IconButton(
-                icon: const Icon(Icons.refresh_rounded),
-                tooltip: 'Обновить',
-                onPressed: () {
-                  context.read<MatchBloc>().add(LoadMatches());
-                },
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: IconButton(
+                  icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+                  tooltip: 'Обновить',
+                  onPressed: () {
+                    context.read<MatchBloc>().add(LoadMatches());
+                  },
+                ),
               ),
             ],
           ),
@@ -126,17 +148,21 @@ class HomePage extends StatelessWidget {
                       children: [
                         // Статистика
                         _buildStatsHeader(context, matchups.length, matches.length),
-                        const SizedBox(height: 20),
+                        SizedBox(height: AppTheme.isMobile(context) ? 24 : 32),
 
                         // Заголовок списка
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          padding: const EdgeInsets.only(left: 4, bottom: 16),
                           child: Text(
                             'Противостояния',
-                            style: Theme.of(context).textTheme.headlineMedium,
+                            style: TextStyle(
+                              fontSize: AppTheme.isMobile(context) ? 20 : 22,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.getTextPrimary(context),
+                              letterSpacing: 0.3,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 12),
 
                         // Адаптивный список/grid противостояний
                         _buildMatchupsList(context, matchups),
@@ -178,6 +204,7 @@ class HomePage extends StatelessWidget {
     final columns = AppTheme.getGridColumns(context);
     final entries = matchups.entries.toList();
     final rows = (entries.length / columns).ceil();
+    final spacing = AppTheme.isTablet(context) ? 12.0 : 16.0;
 
     return Column(
       children: List.generate(rows, (rowIndex) {
@@ -186,23 +213,28 @@ class HomePage extends StatelessWidget {
         final rowEntries = entries.sublist(startIndex, endIndex);
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.only(bottom: spacing),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: rowEntries.map((entry) {
-              final homeTeam = entry.value[0] as String;
-              final awayTeam = entry.value[1] as String;
-              final matchCount = entry.value[2] as int;
-
-              return Expanded(
-                child: _buildMatchupCard(
-                  context,
-                  homeTeam,
-                  awayTeam,
-                  matchCount,
+            children: [
+              for (var i = 0; i < rowEntries.length; i++) ...[
+                Expanded(
+                  child: _buildMatchupCard(
+                    context,
+                    rowEntries[i].value[0] as String,
+                    rowEntries[i].value[1] as String,
+                    rowEntries[i].value[2] as int,
+                  ),
                 ),
-              );
-            }).toList(),
+                if (i < rowEntries.length - 1) SizedBox(width: spacing),
+              ],
+              // Заполнители для выравнивания
+              if (rowEntries.length < columns)
+                ...List.generate(
+                  columns - rowEntries.length,
+                  (index) => Expanded(child: SizedBox(width: spacing)),
+                ),
+            ],
           ),
         );
       }),
@@ -215,56 +247,102 @@ class HomePage extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: AnimatedGradientCard(
-            gradient: AppTheme.primaryGradient,
-            padding: EdgeInsets.all(isMobile ? 16 : 20),
+          child: Container(
+            padding: EdgeInsets.all(isMobile ? 20 : 24),
+            decoration: BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primaryBlue.withOpacity(0.2),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Column(
               children: [
-                Icon(Icons.group, size: isMobile ? 28 : 32, color: Colors.white),
-                SizedBox(height: isMobile ? 6 : 8),
-                Text(
-                  '$matchupsCount',
-                  style: TextStyle(
-                    fontSize: isMobile ? 24 : 28,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    Icons.group_rounded,
+                    size: isMobile ? 24 : 28,
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(height: isMobile ? 2 : 4),
+                SizedBox(height: isMobile ? 12 : 14),
                 Text(
-                  'Противостояний',
+                  '$matchupsCount',
                   style: TextStyle(
-                    fontSize: isMobile ? 11 : 12,
-                    color: Colors.white70,
+                    fontSize: isMobile ? 28 : 32,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    height: 1,
+                  ),
+                ),
+                SizedBox(height: isMobile ? 4 : 6),
+                Text(
+                  'Команд',
+                  style: TextStyle(
+                    fontSize: isMobile ? 12 : 13,
+                    color: Colors.white.withOpacity(0.85),
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: isMobile ? 12 : 16),
         Expanded(
-          child: AnimatedGradientCard(
-            gradient: AppTheme.successGradient,
-            padding: EdgeInsets.all(isMobile ? 16 : 20),
+          child: Container(
+            padding: EdgeInsets.all(isMobile ? 20 : 24),
+            decoration: BoxDecoration(
+              gradient: AppTheme.successGradient,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.accentGreen.withOpacity(0.2),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Column(
               children: [
-                Icon(Icons.sports_soccer, size: isMobile ? 28 : 32, color: Colors.white),
-                SizedBox(height: isMobile ? 6 : 8),
-                Text(
-                  '$totalMatches',
-                  style: TextStyle(
-                    fontSize: isMobile ? 24 : 28,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    Icons.sports_soccer_rounded,
+                    size: isMobile ? 24 : 28,
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(height: isMobile ? 2 : 4),
+                SizedBox(height: isMobile ? 12 : 14),
+                Text(
+                  '$totalMatches',
+                  style: TextStyle(
+                    fontSize: isMobile ? 28 : 32,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    height: 1,
+                  ),
+                ),
+                SizedBox(height: isMobile ? 4 : 6),
                 Text(
                   'Матчей',
                   style: TextStyle(
-                    fontSize: isMobile ? 11 : 12,
-                    color: Colors.white70,
+                    fontSize: isMobile ? 12 : 13,
+                    color: Colors.white.withOpacity(0.85),
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
@@ -293,109 +371,128 @@ class HomePage extends StatelessWidget {
           ),
         );
       },
-      child: GlassCard(
+      child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        onTap: () {
-          context.go('/analysis/$homeTeam/$awayTeam');
-        },
-        child: Row(
-          children: [
-            // Аватар с градиентом
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                gradient: AppTheme.primaryGradient,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.primaryBlue.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Text(
-                  '$matchCount',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-
-            // Информация
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    homeTeam,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.getTextPrimary(context),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        'vs',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.getTextSecondary(context),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        awayTeam,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.getTextPrimary(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryBlue.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      '$matchCount матчей в истории',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: AppTheme.primaryBlue,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Стрелка
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryBlue.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 20,
-                color: AppTheme.primaryBlue,
-              ),
+        decoration: BoxDecoration(
+          color: AppTheme.getCard(context),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.isDarkMode(context) 
+                  ? Colors.black.withOpacity(0.15)
+                  : Colors.black.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 2),
             ),
           ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              context.go('/analysis/$homeTeam/$awayTeam');
+            },
+            borderRadius: BorderRadius.circular(24),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  // Мягкий badge с количеством
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '$matchCount',
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+
+                  // Информация
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          homeTeam,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.getTextPrimary(context),
+                            letterSpacing: 0.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppTheme.getTextSecondary(context).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'VS',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.getTextSecondary(context),
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                awayTeam,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppTheme.getTextPrimary(context),
+                                  letterSpacing: 0.2,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  // Мягкая стрелка
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryBlue.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: AppTheme.primaryBlue,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -538,7 +635,17 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildFAB(BuildContext context) {
-    return PulseAnimation(
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryBlue.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: FloatingActionButton.extended(
         onPressed: () async {
           try {
@@ -585,12 +692,14 @@ class HomePage extends StatelessWidget {
             }
           }
         },
-        icon: const Icon(Icons.download_rounded, size: 24),
+        elevation: 0,
+        icon: const Icon(Icons.download_rounded, size: 22),
         label: const Text(
-          'Загрузить данные',
+          'Загрузить',
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
           ),
         ),
       ),

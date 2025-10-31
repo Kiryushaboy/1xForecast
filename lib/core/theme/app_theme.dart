@@ -103,10 +103,10 @@ class AppTheme {
     // Floating action button theme
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: primaryBlue,
-      foregroundColor: textPrimaryDark,
-      elevation: 6,
+      foregroundColor: Colors.white,
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(28),
       ),
     ),
 
@@ -207,9 +207,9 @@ class AppTheme {
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: primaryBlue,
       foregroundColor: Colors.white,
-      elevation: 6,
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(28),
       ),
     ),
 
@@ -261,20 +261,20 @@ class AppTheme {
   static const double tabletBreakpoint = 900;
   static const double desktopBreakpoint = 1200;
   
-  // Адаптивные паддинги
+  // Адаптивные паддинги - более воздушные
   static double getHorizontalPadding(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    if (width < mobileBreakpoint) return 16;
-    if (width < tabletBreakpoint) return 24;
-    if (width < desktopBreakpoint) return 32;
-    return 48;
+    if (width < mobileBreakpoint) return 20;
+    if (width < tabletBreakpoint) return 32;
+    if (width < desktopBreakpoint) return 48;
+    return 64;
   }
   
   static double getVerticalPadding(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    if (width < mobileBreakpoint) return 12;
-    if (width < tabletBreakpoint) return 16;
-    return 24;
+    if (width < mobileBreakpoint) return 16;
+    if (width < tabletBreakpoint) return 20;
+    return 28;
   }
   
   // Определение типа устройства
@@ -298,11 +298,11 @@ class AppTheme {
     return 4;
   }
   
-  // Адаптивная высота AppBar
+  // Адаптивная высота AppBar - более компактная
   static double getAppBarHeight(BuildContext context) {
-    if (isMobile(context)) return 180;
-    if (isTablet(context)) return 200;
-    return 220;
+    if (isMobile(context)) return 160;
+    if (isTablet(context)) return 180;
+    return 200;
   }
   
   // Получение текущей темы (светлая/тёмная)
