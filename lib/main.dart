@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'core/router/app_router.dart';
+import 'core/theme/app_theme.dart';
 import 'features/matches/data/datasources/match_local_datasource.dart';
 import 'features/matches/data/repositories/match_repository_impl.dart';
 import 'features/matches/presentation/bloc/match_bloc.dart';
@@ -36,10 +37,8 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp.router(
         title: '1xForecast',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-        ),
+        theme: AppTheme.darkTheme,
+        debugShowCheckedModeBanner: true,
         routerConfig: AppRouter.router,
       ),
     );
