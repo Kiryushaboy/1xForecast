@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../constants/ui_constants.dart';
-import '../widgets/animated_widgets.dart';
+import '../../theme/app_theme.dart';
+import '../../constants/ui_constants.dart';
+import '../animations/pulse_animation.dart';
 
 enum StateType { loading, error, empty }
 
