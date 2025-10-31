@@ -66,6 +66,7 @@ class UiConstants {
   static const Duration animationDurationSlow = Duration(milliseconds: 400);
 
   // Opacity значения
+  static const double opacityLow = 0.2;
   static const double opacityDisabled = 0.38;
   static const double opacityMedium = 0.6;
   static const double opacityHigh = 0.85;

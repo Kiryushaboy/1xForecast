@@ -1,66 +1,65 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/ui_constants.dart';
+import '../../../../core/widgets/base_card.dart';
 
-class MatchupCard extends StatelessWidget {
+class MatchupCard extends BaseCard {
   final String homeTeam;
   final String awayTeam;
   final int matchCount;
-  final VoidCallback onTap;
 
   const MatchupCard({
     super.key,
     required this.homeTeam,
     required this.awayTeam,
     required this.matchCount,
-    required this.onTap,
+    required super.onTap,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildContent(BuildContext context) {
     return TweenAnimationBuilder<double>(
       duration: UiConstants.animationDurationSlow,
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
-        return Transform.translate(
-          offset: Offset(0, UiConstants.spacingXLarge * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: child,
+      builder: (context, value, child) => Transform.translate(
+        offset: Offset(0, UiConstants.spacingXLarge * (1 - value)),
+        child: Opacity(opacity: value, child: child),
+      ),
+      child: Row(
+        children: [
+          _buildBadge(),
+          SizedBox(width: UiConstants.spacingLarge),
+          Expanded(child: _buildTeamInfo(context)),
+          _buildArrowIcon(),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: UiConstants.spacingMedium),
+      decoration: BoxDecoration(
+        color: AppTheme.getCard(context),
+        borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
+        boxShadow: [
+          BoxShadow(
+            color: (AppTheme.isDarkMode(context) ? Colors.black : Colors.black)
+                .withOpacity(AppTheme.isDarkMode(context) ? 0.15 : 0.06),
+            blurRadius: UiConstants.elevationXHigh,
+            offset: Offset(0, UiConstants.elevationLow),
           ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: UiConstants.spacingMedium),
-        decoration: BoxDecoration(
-          color: AppTheme.getCard(context),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.isDarkMode(context)
-                  ? Colors.black.withOpacity(0.15)
-                  : Colors.black.withOpacity(0.06),
-              blurRadius: UiConstants.elevationXHigh,
-              offset: const Offset(0, UiConstants.elevationLow),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
-            child: Padding(
-              padding: const EdgeInsets.all(UiConstants.cardPaddingMedium),
-              child: Row(
-                children: [
-                  _buildBadge(),
-                  const SizedBox(width: UiConstants.spacingLarge),
-                  Expanded(child: _buildTeamInfo(context)),
-                  _buildArrowIcon(),
-                ],
-              ),
-            ),
+          child: Padding(
+            padding: EdgeInsets.all(UiConstants.cardPaddingMedium),
+            child: buildContent(context),
           ),
         ),
       ),

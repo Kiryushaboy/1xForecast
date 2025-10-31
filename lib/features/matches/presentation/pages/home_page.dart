@@ -5,10 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/ui_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/theme_cubit.dart';
+import '../../../../core/theme/theme_extensions.dart';
+import '../../../../core/widgets/state_widget.dart';
 import '../bloc/match_bloc.dart';
-import '../widgets/empty_state_widget.dart';
-import '../widgets/error_state_widget.dart';
-import '../widgets/loading_state_widget.dart';
 import '../widgets/matchup_card.dart';
 import '../widgets/stats_card.dart';
 import '../../data/datasources/bet_parser_service.dart';
@@ -32,16 +31,13 @@ class HomePage extends StatelessWidget {
 
   Widget _buildAppBar(BuildContext context) {
     final appBarHeight = AppTheme.getAppBarHeight(context);
-    final isMobile = AppTheme.isMobile(context);
 
     return SliverAppBar(
       expandedHeight: appBarHeight,
-      floating: false,
       pinned: true,
-      backgroundColor: AppTheme.getSurface(context),
-      elevation: 0,
+      backgroundColor: context.surfaceColor,
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.only(
+        titlePadding: EdgeInsets.only(
           left: UiConstants.spacingLarge,
           bottom: UiConstants.spacingLarge,
         ),
@@ -49,7 +45,9 @@ class HomePage extends StatelessWidget {
           '1xForecast',
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: isMobile ? UiConstants.fontSizeXLarge : UiConstants.fontSizeXXLarge + 2,
+            fontSize: context.isMobile
+                ? UiConstants.fontSizeXLarge
+                : UiConstants.fontSizeXXLarge + 2,
             color: Colors.white,
             letterSpacing: UiConstants.letterSpacingWide,
           ),
@@ -71,20 +69,23 @@ class HomePage extends StatelessWidget {
                   padding: const EdgeInsets.all(UiConstants.spacingLarge),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
+                    borderRadius:
+                        BorderRadius.circular(UiConstants.borderRadiusXLarge),
                   ),
                   child: Icon(
                     Icons.sports_soccer,
-                    size: isMobile ? 40 : UiConstants.iconSizeXXLarge,
+                    size: context.isMobile ? 40 : UiConstants.iconSizeXXLarge,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: UiConstants.spacingMedium),
+                SizedBox(height: UiConstants.spacingMedium),
                 Text(
                   'FIFA FC24 4x4',
                   style: TextStyle(
                     color: Colors.white.withOpacity(UiConstants.opacityVeryHigh),
-                    fontSize: isMobile ? UiConstants.fontSizeMedium : UiConstants.fontSizeRegular,
+                    fontSize: context.isMobile
+                        ? UiConstants.fontSizeMedium
+                        : UiConstants.fontSizeRegular,
                     fontWeight: FontWeight.w400,
                     letterSpacing: UiConstants.letterSpacingExtraWide,
                   ),
@@ -95,49 +96,40 @@ class HomePage extends StatelessWidget {
         ),
       ),
       actions: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: UiConstants.spacingXSmall),
-          child: BlocBuilder<ThemeCubit, ThemeMode>(
-            builder: (context, themeMode) {
-              return IconButton(
-                icon: Icon(
-                  themeMode == ThemeMode.dark
-                      ? Icons.light_mode_rounded
-                      : Icons.dark_mode_rounded,
-                  color: Colors.white,
-                ),
-                tooltip: themeMode == ThemeMode.dark ? 'Светлая тема' : 'Тёмная тема',
-                onPressed: () => context.read<ThemeCubit>().toggleTheme(),
-              );
-            },
+        BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, mode) => IconButton(
+            icon: Icon(
+              mode == ThemeMode.dark
+                  ? Icons.light_mode_rounded
+                  : Icons.dark_mode_rounded,
+              color: Colors.white,
+            ),
+            tooltip: mode == ThemeMode.dark ? 'Светлая тема' : 'Тёмная тема',
+            onPressed: context.read<ThemeCubit>().toggleTheme,
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: UiConstants.spacingSmall),
-          child: IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-            tooltip: 'Обновить',
-            onPressed: () => context.read<MatchBloc>().add(LoadMatches()),
-          ),
+        IconButton(
+          icon: Icon(Icons.refresh_rounded, color: Colors.white),
+          tooltip: 'Обновить',
+          onPressed: () => context.read<MatchBloc>().add(LoadMatches()),
         ),
+        SizedBox(width: UiConstants.spacingXSmall),
       ],
     );
   }
 
   Widget _buildContent(BuildContext context) {
-    final horizontalPadding = AppTheme.getHorizontalPadding(context);
-
     return SliverToBoxAdapter(
       child: Padding(
-        padding: EdgeInsets.all(horizontalPadding),
+        padding: EdgeInsets.all(context.horizontalPadding),
         child: BlocBuilder<MatchBloc, MatchState>(
           builder: (context, state) {
             if (state is MatchLoading) {
-              return const LoadingStateWidget();
+              return const StateWidget.loading();
             }
 
             if (state is MatchError) {
-              return ErrorStateWidget(
+              return StateWidget.error(
                 message: state.message,
                 onRetry: () => context.read<MatchBloc>().add(LoadMatches()),
               );
@@ -146,14 +138,14 @@ class HomePage extends StatelessWidget {
             if (state is MatchLoaded) {
               final matches = state.matches;
               if (matches.isEmpty) {
-                return const EmptyStateWidget();
+                return const StateWidget.empty();
               }
 
               final matchups = _groupMatchesByMatchup(matches);
               return _buildMatchupsContent(context, matchups, matches.length);
             }
 
-            return const EmptyStateWidget();
+            return const StateWidget.empty();
           },
         ),
       ),
@@ -183,24 +175,28 @@ class HomePage extends StatelessWidget {
     List<Matchup> matchups,
     int totalMatches,
   ) {
-    final isMobile = AppTheme.isMobile(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildStatsHeader(context, matchups.length, totalMatches),
-        SizedBox(height: isMobile ? UiConstants.spacingXXLarge : UiConstants.spacingHuge),
+        SizedBox(
+          height: context.isMobile
+              ? UiConstants.spacingXXLarge
+              : UiConstants.spacingHuge,
+        ),
         Padding(
-          padding: const EdgeInsets.only(
+          padding: EdgeInsets.only(
             left: UiConstants.spacingXSmall,
             bottom: UiConstants.spacingLarge,
           ),
           child: Text(
             'Противостояния',
             style: TextStyle(
-              fontSize: isMobile ? UiConstants.fontSizeXLarge : UiConstants.fontSizeXXLarge,
+              fontSize: context.isMobile
+                  ? UiConstants.fontSizeXLarge
+                  : UiConstants.fontSizeXXLarge,
               fontWeight: FontWeight.w600,
-              color: AppTheme.getTextPrimary(context),
+              color: context.textPrimary,
               letterSpacing: UiConstants.letterSpacingNormal,
             ),
           ),
@@ -210,9 +206,8 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsHeader(BuildContext context, int matchupsCount, int totalMatches) {
-    final isMobile = AppTheme.isMobile(context);
-
+  Widget _buildStatsHeader(
+      BuildContext context, int matchupsCount, int totalMatches) {
     return Row(
       children: [
         StatsCard(
@@ -222,7 +217,11 @@ class HomePage extends StatelessWidget {
           gradient: AppTheme.primaryGradient,
           shadowColor: AppTheme.primaryBlue,
         ),
-        SizedBox(width: isMobile ? UiConstants.spacingMedium : UiConstants.spacingLarge),
+        SizedBox(
+          width: context.isMobile
+              ? UiConstants.spacingMedium
+              : UiConstants.spacingLarge,
+        ),
         StatsCard(
           icon: Icons.sports_soccer_rounded,
           value: totalMatches,
@@ -235,28 +234,25 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildMatchupsList(BuildContext context, List<Matchup> matchups) {
-    if (AppTheme.isMobile(context)) {
+    if (context.isMobile) {
       return Column(
         children: matchups
-            .map((matchup) => MatchupCard(
-                  homeTeam: matchup.homeTeam,
-                  awayTeam: matchup.awayTeam,
-                  matchCount: matchup.matchCount,
-                  onTap: () => context.go(
-                    '/analysis/${matchup.homeTeam}/${matchup.awayTeam}',
-                  ),
+            .map((m) => MatchupCard(
+                  homeTeam: m.homeTeam,
+                  awayTeam: m.awayTeam,
+                  matchCount: m.matchCount,
+                  onTap: () => context.go('/analysis/${m.homeTeam}/${m.awayTeam}'),
                 ))
             .toList(),
       );
     }
 
-    // Grid для планшетов и десктопов
-    final columns = AppTheme.getGridColumns(context);
-    final spacing = AppTheme.isTablet(context) 
-        ? UiConstants.spacingMedium 
-        : UiConstants.spacingLarge;
-
-    return _buildGrid(context, matchups, columns, spacing);
+    return _buildGrid(
+      context,
+      matchups,
+      context.gridColumns,
+      context.isTablet ? UiConstants.spacingMedium : UiConstants.spacingLarge,
+    );
   }
 
   Widget _buildGrid(
@@ -265,36 +261,33 @@ class HomePage extends StatelessWidget {
     int columns,
     double spacing,
   ) {
-    final rows = (matchups.length / columns).ceil();
-
     return Column(
-      children: List.generate(rows, (rowIndex) {
-        final startIndex = rowIndex * columns;
-        final endIndex = (startIndex + columns).clamp(0, matchups.length);
-        final rowMatchups = matchups.sublist(startIndex, endIndex);
+      children: List.generate((matchups.length / columns).ceil(), (rowIndex) {
+        final start = rowIndex * columns;
+        final end = (start + columns).clamp(0, matchups.length);
+        final rowItems = matchups.sublist(start, end);
 
         return Padding(
           padding: EdgeInsets.only(bottom: spacing),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (var i = 0; i < rowMatchups.length; i++) ...[
+              for (var i = 0; i < rowItems.length; i++) ...[
                 Expanded(
                   child: MatchupCard(
-                    homeTeam: rowMatchups[i].homeTeam,
-                    awayTeam: rowMatchups[i].awayTeam,
-                    matchCount: rowMatchups[i].matchCount,
+                    homeTeam: rowItems[i].homeTeam,
+                    awayTeam: rowItems[i].awayTeam,
+                    matchCount: rowItems[i].matchCount,
                     onTap: () => context.go(
-                      '/analysis/${rowMatchups[i].homeTeam}/${rowMatchups[i].awayTeam}',
+                      '/analysis/${rowItems[i].homeTeam}/${rowItems[i].awayTeam}',
                     ),
                   ),
                 ),
-                if (i < rowMatchups.length - 1) SizedBox(width: spacing),
+                if (i < rowItems.length - 1) SizedBox(width: spacing),
               ],
-              if (rowMatchups.length < columns)
+              if (rowItems.length < columns)
                 ...List.generate(
-                  columns - rowMatchups.length,
-                  (index) => Expanded(child: SizedBox(width: spacing)),
+                  columns - rowItems.length,
+                  (_) => Expanded(child: SizedBox()),
                 ),
             ],
           ),
