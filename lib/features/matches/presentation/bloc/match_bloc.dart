@@ -46,9 +46,11 @@ class MatchError extends MatchState {
 
 // Bloc
 class MatchBloc extends Bloc<MatchEvent, MatchState> {
-  final MatchRepository repository;
+  final MatchRepository _repository;
 
-  MatchBloc(this.repository) : super(MatchInitial()) {
+  MatchBloc(MatchRepository repository)
+      : _repository = repository,
+        super(MatchInitial()) {
     on<LoadMatches>(_onLoadMatches);
     on<AddMatch>(_onAddMatch);
     on<SaveMatches>(_onSaveMatches);
@@ -62,7 +64,7 @@ class MatchBloc extends Bloc<MatchEvent, MatchState> {
   ) async {
     emit(MatchLoading());
     try {
-      final matches = await repository.getAllMatches();
+      final matches = await _repository.getAllMatches();
       emit(MatchLoaded(matches));
     } catch (e) {
       emit(MatchError(e.toString()));
@@ -74,7 +76,7 @@ class MatchBloc extends Bloc<MatchEvent, MatchState> {
     Emitter<MatchState> emit,
   ) async {
     try {
-      await repository.addMatch(event.match);
+      await _repository.addMatch(event.match);
       add(LoadMatches());
     } catch (e) {
       emit(MatchError(e.toString()));
@@ -87,7 +89,7 @@ class MatchBloc extends Bloc<MatchEvent, MatchState> {
   ) async {
     emit(MatchLoading());
     try {
-      await repository.saveMatches(event.matches);
+      await _repository.saveMatches(event.matches);
       emit(MatchLoaded(event.matches));
     } catch (e) {
       emit(MatchError(e.toString()));
@@ -99,7 +101,7 @@ class MatchBloc extends Bloc<MatchEvent, MatchState> {
     Emitter<MatchState> emit,
   ) async {
     try {
-      await repository.clearAllMatches();
+      await _repository.clearAllMatches();
       emit(MatchLoaded([]));
     } catch (e) {
       emit(MatchError(e.toString()));
@@ -112,7 +114,7 @@ class MatchBloc extends Bloc<MatchEvent, MatchState> {
   ) async {
     emit(MatchLoading());
     try {
-      final matches = await repository.filterMatches(
+      final matches = await _repository.filterMatches(
         tournament: event.tournament,
         startDate: event.startDate,
         endDate: event.endDate,

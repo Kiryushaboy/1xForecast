@@ -334,7 +334,7 @@ class HomePage extends StatelessWidget {
   Future<void> _handleLoadData(BuildContext context) async {
     try {
       final betParser = BetParserService();
-      final matches = betParser.getTestMatches();
+      final matches = await betParser.fetchMatches();
 
       if (context.mounted) {
         context.read<MatchBloc>().add(SaveMatches(matches));

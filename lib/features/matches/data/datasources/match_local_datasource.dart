@@ -6,14 +6,14 @@ class MatchLocalDataSource {
   static const String _boxName = AppConstants.matchesKey;
   Box<dynamic>? _box;
 
-  Future<void> init() async {
+  Future<void> _init() async {
     if (_box == null || !_box!.isOpen) {
       _box = await Hive.openBox(_boxName);
     }
   }
 
   Future<List<Match>> getMatches() async {
-    await init();
+    await _init();
     final data = _box!.get('matches', defaultValue: <dynamic>[]) as List;
     return data
         .map((json) => Match.fromJson(Map<String, dynamic>.from(json)))
@@ -21,7 +21,7 @@ class MatchLocalDataSource {
   }
 
   Future<void> saveMatches(List<Match> matches) async {
-    await init();
+    await _init();
     final jsonList = matches.map((m) => m.toJson()).toList();
     await _box!.put('matches', jsonList);
   }
@@ -33,7 +33,7 @@ class MatchLocalDataSource {
   }
 
   Future<void> clearMatches() async {
-    await init();
+    await _init();
     await _box!.delete('matches');
   }
 

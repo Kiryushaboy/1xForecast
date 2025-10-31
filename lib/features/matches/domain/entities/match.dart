@@ -1,35 +1,48 @@
 class Match {
-  final String homeTeam;
-  final String awayTeam;
-  final int homeScore;
-  final int awayScore;
-  final DateTime date;
-  final String tournament;
+  final String _homeTeam;
+  final String _awayTeam;
+  final int _homeScore;
+  final int _awayScore;
+  final DateTime _date;
+  final String _tournament;
 
   const Match({
-    required this.homeTeam,
-    required this.awayTeam,
-    required this.homeScore,
-    required this.awayScore,
-    required this.date,
-    required this.tournament,
-  });
+    required String homeTeam,
+    required String awayTeam,
+    required int homeScore,
+    required int awayScore,
+    required DateTime date,
+    required String tournament,
+  })  : _homeTeam = homeTeam,
+        _awayTeam = awayTeam,
+        _homeScore = homeScore,
+        _awayScore = awayScore,
+        _date = date,
+        _tournament = tournament;
 
-  int get totalGoals => homeScore + awayScore;
+  // Геттеры для доступа к приватным полям
+  String get homeTeam => _homeTeam;
+  String get awayTeam => _awayTeam;
+  int get homeScore => _homeScore;
+  int get awayScore => _awayScore;
+  DateTime get date => _date;
+  String get tournament => _tournament;
 
-  bool get isHighScoring => homeScore >= 6 && awayScore >= 6;
+  int get totalGoals => _homeScore + _awayScore;
+
+  bool get isHighScoring => _homeScore >= 6 && _awayScore >= 6;
 
   bool bothTeamsScored(int threshold) =>
-      homeScore >= threshold && awayScore >= threshold;
+      _homeScore >= threshold && _awayScore >= threshold;
 
   Map<String, dynamic> toJson() {
     return {
-      'homeTeam': homeTeam,
-      'awayTeam': awayTeam,
-      'homeScore': homeScore,
-      'awayScore': awayScore,
-      'date': date.toIso8601String(),
-      'tournament': tournament,
+      'homeTeam': _homeTeam,
+      'awayTeam': _awayTeam,
+      'homeScore': _homeScore,
+      'awayScore': _awayScore,
+      'date': _date.toIso8601String(),
+      'tournament': _tournament,
     };
   }
 
@@ -53,12 +66,12 @@ class Match {
     String? tournament,
   }) {
     return Match(
-      homeTeam: homeTeam ?? this.homeTeam,
-      awayTeam: awayTeam ?? this.awayTeam,
-      homeScore: homeScore ?? this.homeScore,
-      awayScore: awayScore ?? this.awayScore,
-      date: date ?? this.date,
-      tournament: tournament ?? this.tournament,
+      homeTeam: homeTeam ?? _homeTeam,
+      awayTeam: awayTeam ?? _awayTeam,
+      homeScore: homeScore ?? _homeScore,
+      awayScore: awayScore ?? _awayScore,
+      date: date ?? _date,
+      tournament: tournament ?? _tournament,
     );
   }
 
@@ -67,19 +80,19 @@ class Match {
       identical(this, other) ||
       other is Match &&
           runtimeType == other.runtimeType &&
-          homeTeam == other.homeTeam &&
-          awayTeam == other.awayTeam &&
-          homeScore == other.homeScore &&
-          awayScore == other.awayScore &&
-          date == other.date &&
-          tournament == other.tournament;
+          _homeTeam == other._homeTeam &&
+          _awayTeam == other._awayTeam &&
+          _homeScore == other._homeScore &&
+          _awayScore == other._awayScore &&
+          _date == other._date &&
+          _tournament == other._tournament;
 
   @override
   int get hashCode =>
-      homeTeam.hashCode ^
-      awayTeam.hashCode ^
-      homeScore.hashCode ^
-      awayScore.hashCode ^
-      date.hashCode ^
-      tournament.hashCode;
+      _homeTeam.hashCode ^
+      _awayTeam.hashCode ^
+      _homeScore.hashCode ^
+      _awayScore.hashCode ^
+      _date.hashCode ^
+      _tournament.hashCode;
 }

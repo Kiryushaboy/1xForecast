@@ -2,21 +2,28 @@ import 'package:equatable/equatable.dart';
 
 /// Модель противостояния команд
 class Matchup extends Equatable {
-  final String homeTeam;
-  final String awayTeam;
-  final int matchCount;
+  final String _homeTeam;
+  final String _awayTeam;
+  final int _matchCount;
 
   const Matchup({
-    required this.homeTeam,
-    required this.awayTeam,
-    required this.matchCount,
-  });
+    required String homeTeam,
+    required String awayTeam,
+    required int matchCount,
+  })  : _homeTeam = homeTeam,
+        _awayTeam = awayTeam,
+        _matchCount = matchCount;
 
-  String get key => '$homeTeam vs $awayTeam';
+  // Геттеры для доступа к приватным полям
+  String get homeTeam => _homeTeam;
+  String get awayTeam => _awayTeam;
+  int get matchCount => _matchCount;
+
+  String get key => '$_homeTeam vs $_awayTeam';
 
   @override
-  List<Object?> get props => [homeTeam, awayTeam, matchCount];
+  List<Object?> get props => [_homeTeam, _awayTeam, _matchCount];
 
   @override
-  String toString() => 'Matchup($homeTeam vs $awayTeam: $matchCount матчей)';
+  String toString() => 'Matchup($_homeTeam vs $_awayTeam: $_matchCount матчей)';
 }

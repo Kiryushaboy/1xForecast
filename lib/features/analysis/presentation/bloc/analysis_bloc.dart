@@ -56,11 +56,13 @@ class AnalysisError extends AnalysisState {
 
 // Bloc
 class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
-  final MatchRepository repository;
-  late final MatchupAnalyzer analyzer;
+  final MatchRepository _repository;
+  late final MatchupAnalyzer _analyzer;
 
-  AnalysisBloc(this.repository) : super(AnalysisInitial()) {
-    analyzer = MatchupAnalyzer(repository);
+  AnalysisBloc(MatchRepository repository)
+      : _repository = repository,
+        super(AnalysisInitial()) {
+    _analyzer = MatchupAnalyzer(_repository);
 
     on<LoadMatchupStats>(_onLoadMatchupStats);
     on<LoadSeasonStats>(_onLoadSeasonStats);
@@ -73,7 +75,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   ) async {
     emit(AnalysisLoading());
     try {
-      final stats = await analyzer.analyzeMatchup(
+      final stats = await _analyzer.analyzeMatchup(
         homeTeam: event.homeTeam,
         awayTeam: event.awayTeam,
       );
@@ -89,7 +91,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   ) async {
     emit(AnalysisLoading());
     try {
-      final stats = await analyzer.getSeasonStats(
+      final stats = await _analyzer.getSeasonStats(
         homeTeam: event.homeTeam,
         awayTeam: event.awayTeam,
       );
@@ -105,7 +107,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   ) async {
     emit(AnalysisLoading());
     try {
-      final stats = await analyzer.getLastNStats(
+      final stats = await _analyzer.getLastNStats(
         homeTeam: event.homeTeam,
         awayTeam: event.awayTeam,
         count: event.count,

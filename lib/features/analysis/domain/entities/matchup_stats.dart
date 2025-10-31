@@ -1,21 +1,34 @@
 import '../../../matches/domain/entities/match.dart';
 
 class MatchupStats {
-  final String homeTeam;
-  final String awayTeam;
-  final List<Match> matches;
-  final int totalMatches;
-  final int bothScored6Plus;
-  final double bothScored6PlusPercentage;
+  final String _homeTeam;
+  final String _awayTeam;
+  final List<Match> _matches;
+  final int _totalMatches;
+  final int _bothScored6Plus;
+  final double _bothScored6PlusPercentage;
 
   const MatchupStats({
-    required this.homeTeam,
-    required this.awayTeam,
-    required this.matches,
-    required this.totalMatches,
-    required this.bothScored6Plus,
-    required this.bothScored6PlusPercentage,
-  });
+    required String homeTeam,
+    required String awayTeam,
+    required List<Match> matches,
+    required int totalMatches,
+    required int bothScored6Plus,
+    required double bothScored6PlusPercentage,
+  })  : _homeTeam = homeTeam,
+        _awayTeam = awayTeam,
+        _matches = matches,
+        _totalMatches = totalMatches,
+        _bothScored6Plus = bothScored6Plus,
+        _bothScored6PlusPercentage = bothScored6PlusPercentage;
+
+  // Геттеры для доступа к приватным полям
+  String get homeTeam => _homeTeam;
+  String get awayTeam => _awayTeam;
+  List<Match> get matches => List.unmodifiable(_matches);
+  int get totalMatches => _totalMatches;
+  int get bothScored6Plus => _bothScored6Plus;
+  double get bothScored6PlusPercentage => _bothScored6PlusPercentage;
 
   factory MatchupStats.fromMatches({
     required String homeTeam,
@@ -37,15 +50,24 @@ class MatchupStats {
 }
 
 class SeasonStats {
-  final int season;
-  final int totalMatches;
-  final int bothScored6Plus;
-  final double percentage;
+  final int _season;
+  final int _totalMatches;
+  final int _bothScored6Plus;
+  final double _percentage;
 
   const SeasonStats({
-    required this.season,
-    required this.totalMatches,
-    required this.bothScored6Plus,
-    required this.percentage,
-  });
+    required int season,
+    required int totalMatches,
+    required int bothScored6Plus,
+    required double percentage,
+  })  : _season = season,
+        _totalMatches = totalMatches,
+        _bothScored6Plus = bothScored6Plus,
+        _percentage = percentage;
+
+  // Геттеры для доступа к приватным полям
+  int get season => _season;
+  int get totalMatches => _totalMatches;
+  int get bothScored6Plus => _bothScored6Plus;
+  double get percentage => _percentage;
 }
