@@ -28,11 +28,11 @@ flutter run
 
 Проект построен на **Clean Architecture** с современным стеком:
 
-- **State Management**: Flutter Riverpod
+- **State Management**: Flutter BLoC
 - **Навигация**: go_router
 - **Хранилище**: Hive
 - **HTTP Client**: Dio (готов для API)
-- **Утилиты**: Logger, Equatable, Intl
+- **Утилиты**: Logger, Intl
 
 ### Структура проекта
 
@@ -46,10 +46,10 @@ lib/
 │   ├── matches/       # Управление матчами
 │   │   ├── data/      # Datasources, Repositories
 │   │   ├── domain/    # Entities, Interfaces
-│   │   └── presentation/  # UI, Providers
+│   │   └── presentation/  # UI, BLoCs
 │   └── analysis/      # Анализ противостояний
 │       ├── domain/    # Stats, Services
-│       └── presentation/  # UI, Providers
+│       └── presentation/  # UI, BLoCs
 └── main.dart          # Точка входа
 ```
 

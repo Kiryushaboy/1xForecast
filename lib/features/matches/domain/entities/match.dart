@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-class Match extends Equatable {
+class Match {
   final String homeTeam;
   final String awayTeam;
   final int homeScore;
@@ -65,6 +63,23 @@ class Match extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [homeTeam, awayTeam, homeScore, awayScore, date, tournament];
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Match &&
+          runtimeType == other.runtimeType &&
+          homeTeam == other.homeTeam &&
+          awayTeam == other.awayTeam &&
+          homeScore == other.homeScore &&
+          awayScore == other.awayScore &&
+          date == other.date &&
+          tournament == other.tournament;
+
+  @override
+  int get hashCode =>
+      homeTeam.hashCode ^
+      awayTeam.hashCode ^
+      homeScore.hashCode ^
+      awayScore.hashCode ^
+      date.hashCode ^
+      tournament.hashCode;
 }

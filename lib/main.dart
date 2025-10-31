@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'core/router/app_router.dart';
+import 'features/matches/data/datasources/match_local_datasource.dart';
+import 'features/matches/data/repositories/match_repository_impl.dart';
+import 'features/matches/presentation/bloc/match_bloc.dart';
+import 'features/analysis/presentation/bloc/analysis_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -9,7 +13,7 @@ void main() async {
   // Initialize Hive
   await Hive.initFlutter();
 
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -17,13 +21,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: '1xForecast',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
+    // Initialize repository
+    final dataSource = MatchLocalDataSource();
+    final repository = MatchRepositoryImpl(dataSource);
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => MatchBloc(repository)..add(LoadMatches()),
+        ),
+        BlocProvider(
+          create: (context) => AnalysisBloc(repository),
+        ),
+      ],
+      child: MaterialApp.router(
+        title: '1xForecast',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+        ),
+        routerConfig: AppRouter.router,
       ),
-      routerConfig: AppRouter.router,
     );
   }
 }

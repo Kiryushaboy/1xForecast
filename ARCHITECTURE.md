@@ -29,11 +29,11 @@ lib/
 │   │   │   │   └── match.dart                   # Модель матча
 │   │   │   └── repositories/
 │   │   │       └── match_repository.dart        # Интерфейс
-│   │   └── presentation/
-│   │       ├── pages/
-│   │       │   └── home_page.dart               # Главная страница
-│   │       └── providers/
-│   │           └── match_providers.dart         # Riverpod providers
+│       └── presentation/
+│           ├── pages/
+│           │   └── home_page.dart               # Главная страница
+│           └── bloc/
+│               └── match_bloc.dart              # BLoC для матчей
 │   │
 │   └── analysis/                  # Анализ противостояний
 │       ├── domain/
@@ -44,8 +44,8 @@ lib/
 │       └── presentation/
 │           ├── pages/
 │           │   └── matchup_analysis_page.dart   # Детальный анализ
-│           └── providers/
-│               └── analysis_providers.dart
+│           └── bloc/
+│               └── analysis_bloc.dart           # BLoC для анализа
 │
 └── main.dart                      # Точка входа
 ```
@@ -53,11 +53,10 @@ lib/
 ## 🚀 Технологический стек
 
 ### Основные зависимости
-- **flutter_riverpod ^2.5.1** - State management (вместо setState)
+- **flutter_bloc ^8.1.6** - State management с паттерном BLoC
 - **go_router ^14.6.2** - Навигация между экранами
 - **hive ^2.2.3** - Локальное хранилище
 - **dio ^5.7.0** - HTTP клиент для API запросов
-- **equatable ^2.0.5** - Сравнение объектов
 
 ### UI компоненты
 - **fl_chart ^0.66.0** - Графики и визуализация
@@ -65,7 +64,6 @@ lib/
 - **logger ^2.4.0** - Логирование
 
 ### Утилиты
-- **excel ^4.0.3** - Экспорт в Excel
 - **shared_preferences ^2.2.2** - Простые настройки
 
 ## 📊 Ключевые возможности
@@ -143,31 +141,35 @@ Future<List<Match>> fetchMatches() async {
 }
 ```
 
-## 📱 State Management (Riverpod)
+## 📱 State Management (BLoC)
 
-### Providers
+### BLoCs
 ```dart
-// Загрузка всех матчей
-final allMatchesProvider = FutureProvider<List<Match>>;
+// Управление матчами
+class MatchBloc extends Bloc<MatchEvent, MatchState> {
+  // Events: LoadMatches, SaveMatches, AddMatch, FilterMatches
+  // States: MatchLoading, MatchLoaded, MatchError
+}
 
-// Статистика противостояния
-final matchupStatsProvider = FutureProvider.family<MatchupStats, MatchupParams>;
-
-// Управление списком матчей
-final matchesNotifierProvider = StateNotifierProvider<MatchesNotifier>;
+// Анализ противостояний
+class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
+  // Events: LoadMatchupStats, LoadSeasonStats
+  // States: MatchupStatsLoaded, SeasonStatsLoaded, AnalysisError
+}
 ```
 
 ### Использование в UI
 ```dart
-class HomePage extends ConsumerWidget {
+class HomePage extends StatelessWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final matchesAsync = ref.watch(allMatchesProvider);
-    
-    return matchesAsync.when(
-      data: (matches) => ListView(...),
-      loading: () => CircularProgressIndicator(),
-      error: (error, stack) => ErrorWidget(error),
+  Widget build(BuildContext context) {
+    return BlocBuilder<MatchBloc, MatchState>(
+      builder: (context, state) {
+        if (state is MatchLoading) return CircularProgressIndicator();
+        if (state is MatchLoaded) return ListView(...);
+        if (state is MatchError) return ErrorWidget(state.message);
+        return SizedBox();
+      },
     );
   }
 }

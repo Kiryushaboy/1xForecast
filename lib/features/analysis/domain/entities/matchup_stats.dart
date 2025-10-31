@@ -1,7 +1,6 @@
-import 'package:equatable/equatable.dart';
 import '../../../matches/domain/entities/match.dart';
 
-class MatchupStats extends Equatable {
+class MatchupStats {
   final String homeTeam;
   final String awayTeam;
   final List<Match> matches;
@@ -35,19 +34,9 @@ class MatchupStats extends Equatable {
           matches.isEmpty ? 0.0 : (bothScored6Plus / matches.length) * 100,
     );
   }
-
-  @override
-  List<Object?> get props => [
-        homeTeam,
-        awayTeam,
-        matches,
-        totalMatches,
-        bothScored6Plus,
-        bothScored6PlusPercentage
-      ];
 }
 
-class SeasonStats extends Equatable {
+class SeasonStats {
   final int season;
   final int totalMatches;
   final int bothScored6Plus;
@@ -59,8 +48,4 @@ class SeasonStats extends Equatable {
     required this.bothScored6Plus,
     required this.percentage,
   });
-
-  @override
-  List<Object?> get props =>
-      [season, totalMatches, bothScored6Plus, percentage];
 }
