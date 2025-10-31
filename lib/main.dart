@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_cubit.dart';
 import 'features/matches/data/datasources/match_local_datasource.dart';
 import 'features/matches/data/repositories/match_repository_impl.dart';
 import 'features/matches/presentation/bloc/match_bloc.dart';
@@ -29,17 +30,26 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
+          create: (context) => ThemeCubit(),
+        ),
+        BlocProvider(
           create: (context) => MatchBloc(repository)..add(LoadMatches()),
         ),
         BlocProvider(
           create: (context) => AnalysisBloc(repository),
         ),
       ],
-      child: MaterialApp.router(
-        title: '1xForecast',
-        theme: AppTheme.darkTheme,
-        debugShowCheckedModeBanner: true,
-        routerConfig: AppRouter.router,
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp.router(
+            title: '1xForecast',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeMode,
+            debugShowCheckedModeBanner: false,
+            routerConfig: AppRouter.router,
+          );
+        },
       ),
     );
   }

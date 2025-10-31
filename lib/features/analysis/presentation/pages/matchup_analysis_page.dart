@@ -274,10 +274,10 @@ class _MatchupAnalysisPageState extends State<MatchupAnalysisPage>
         ),
         const SizedBox(height: 16),
         if (seasonStats.isEmpty)
-          const Center(
+          Center(
             child: Text(
               'Нет данных по сезонам',
-              style: TextStyle(color: AppTheme.textSecondary),
+              style: TextStyle(color: AppTheme.getTextSecondary(context)),
             ),
           )
         else
@@ -327,18 +327,18 @@ class _MatchupAnalysisPageState extends State<MatchupAnalysisPage>
                         children: [
                           Text(
                             'Сезон ${season.season}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.textPrimary,
+                              color: AppTheme.getTextPrimary(context),
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             '${season.bothScored6Plus} из ${season.totalMatches} матчей',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              color: AppTheme.textSecondary,
+                              color: AppTheme.getTextSecondary(context),
                             ),
                           ),
                         ],
@@ -397,7 +397,7 @@ class _MatchupAnalysisPageState extends State<MatchupAnalysisPage>
           final match = stats.matches[index];
           final bothScored6 =
               match.bothTeamsScored(AppConstants.highScoringThreshold);
-          final matchColor = bothScored6 ? AppTheme.accentGreen : AppTheme.textSecondary;
+          final matchColor = bothScored6 ? AppTheme.accentGreen : AppTheme.getTextSecondary(context);
 
           return TweenAnimationBuilder<double>(
             duration: Duration(milliseconds: 400 + (index * 80)),
@@ -438,18 +438,18 @@ class _MatchupAnalysisPageState extends State<MatchupAnalysisPage>
                       children: [
                         Text(
                           '${match.homeScore} : ${match.awayScore}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: AppTheme.textPrimary,
+                            color: AppTheme.getTextPrimary(context),
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           DateFormat('dd MMMM yyyy', 'ru').format(match.date),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: AppTheme.textSecondary,
+                            color: AppTheme.getTextSecondary(context),
                           ),
                         ),
                       ],
@@ -512,11 +512,11 @@ class _MatchupAnalysisPageState extends State<MatchupAnalysisPage>
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Анализируем данные...',
               style: TextStyle(
                 fontSize: 16,
-                color: AppTheme.textSecondary,
+                color: AppTheme.getTextSecondary(context),
               ),
             ),
           ],
@@ -546,21 +546,21 @@ class _MatchupAnalysisPageState extends State<MatchupAnalysisPage>
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Ошибка анализа',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
+                color: AppTheme.getTextPrimary(context),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppTheme.textSecondary,
+                color: AppTheme.getTextSecondary(context),
               ),
             ),
           ],

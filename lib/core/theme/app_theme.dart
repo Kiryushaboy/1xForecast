@@ -8,12 +8,20 @@ class AppTheme {
   static const Color accentOrange = Color(0xFFFF9800);
   static const Color accentRed = Color(0xFFE53935);
   
+  // Dark theme colors
   static const Color backgroundDark = Color(0xFF121212);
   static const Color surfaceDark = Color(0xFF1E1E1E);
   static const Color cardDark = Color(0xFF2C2C2C);
+  static const Color textPrimaryDark = Color(0xFFFFFFFF);
+  static const Color textSecondaryDark = Color(0xFFB0B0B0);
   
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFB0B0B0);
+  // Light theme colors
+  static const Color backgroundLight = Color(0xFFF5F7FA);
+  static const Color surfaceLight = Color(0xFFFFFFFF);
+  static const Color cardLight = Color(0xFFFFFFFF);
+  static const Color textPrimaryLight = Color(0xFF1A1A1A);
+  static const Color textSecondaryLight = Color(0xFF6B6B6B);
+  
   static const Color textHint = Color(0xFF757575);
 
   // Градиенты
@@ -60,7 +68,7 @@ class AppTheme {
       elevation: 0,
       centerTitle: false,
       titleTextStyle: TextStyle(
-        color: textPrimary,
+        color: textPrimaryDark,
         fontSize: 22,
         fontWeight: FontWeight.bold,
       ),
@@ -79,7 +87,7 @@ class AppTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryBlue,
-        foregroundColor: textPrimary,
+        foregroundColor: textPrimaryDark,
         elevation: 4,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         shape: RoundedRectangleBorder(
@@ -95,7 +103,7 @@ class AppTheme {
     // Floating action button theme
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: primaryBlue,
-      foregroundColor: textPrimary,
+      foregroundColor: textPrimaryDark,
       elevation: 6,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -107,36 +115,139 @@ class AppTheme {
       displayLarge: TextStyle(
         fontSize: 32,
         fontWeight: FontWeight.bold,
-        color: textPrimary,
+        color: textPrimaryDark,
       ),
       displayMedium: TextStyle(
         fontSize: 28,
         fontWeight: FontWeight.bold,
-        color: textPrimary,
+        color: textPrimaryDark,
       ),
       displaySmall: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w600,
-        color: textPrimary,
+        color: textPrimaryDark,
       ),
       headlineMedium: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
-        color: textPrimary,
+        color: textPrimaryDark,
       ),
       bodyLarge: TextStyle(
         fontSize: 16,
-        color: textPrimary,
+        color: textPrimaryDark,
       ),
       bodyMedium: TextStyle(
         fontSize: 14,
-        color: textSecondary,
+        color: textSecondaryDark,
       ),
     ),
 
     // Icon theme
     iconTheme: const IconThemeData(
-      color: textPrimary,
+      color: textPrimaryDark,
+      size: 24,
+    ),
+  );
+
+  static ThemeData lightTheme = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    primaryColor: primaryBlue,
+    scaffoldBackgroundColor: backgroundLight,
+    
+    colorScheme: const ColorScheme.light(
+      primary: primaryBlue,
+      secondary: accentGreen,
+      surface: surfaceLight,
+      error: accentRed,
+      background: backgroundLight,
+    ),
+
+    // AppBar theme
+    appBarTheme: const AppBarTheme(
+      backgroundColor: surfaceLight,
+      elevation: 0,
+      centerTitle: false,
+      titleTextStyle: TextStyle(
+        color: textPrimaryLight,
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+      ),
+      iconTheme: IconThemeData(color: textPrimaryLight),
+    ),
+
+    // Card theme
+    cardTheme: CardThemeData(
+      color: cardLight,
+      elevation: 2,
+      shadowColor: Colors.black12,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+    ),
+
+    // Elevated button theme
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primaryBlue,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+
+    // Floating action button theme
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: primaryBlue,
+      foregroundColor: Colors.white,
+      elevation: 6,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+    ),
+
+    // Text theme
+    textTheme: const TextTheme(
+      displayLarge: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        color: textPrimaryLight,
+      ),
+      displayMedium: TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        color: textPrimaryLight,
+      ),
+      displaySmall: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+        color: textPrimaryLight,
+      ),
+      headlineMedium: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: textPrimaryLight,
+      ),
+      bodyLarge: TextStyle(
+        fontSize: 16,
+        color: textPrimaryLight,
+      ),
+      bodyMedium: TextStyle(
+        fontSize: 14,
+        color: textSecondaryLight,
+      ),
+    ),
+
+    // Icon theme
+    iconTheme: const IconThemeData(
+      color: textPrimaryLight,
       size: 24,
     ),
   );
@@ -144,4 +255,70 @@ class AppTheme {
   // Утилиты для анимаций
   static const Duration defaultAnimationDuration = Duration(milliseconds: 300);
   static const Curve defaultAnimationCurve = Curves.easeInOut;
+  
+  // Адаптивные брейкпоинты
+  static const double mobileBreakpoint = 600;
+  static const double tabletBreakpoint = 900;
+  static const double desktopBreakpoint = 1200;
+  
+  // Адаптивные паддинги
+  static double getHorizontalPadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < mobileBreakpoint) return 16;
+    if (width < tabletBreakpoint) return 24;
+    if (width < desktopBreakpoint) return 32;
+    return 48;
+  }
+  
+  static double getVerticalPadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < mobileBreakpoint) return 12;
+    if (width < tabletBreakpoint) return 16;
+    return 24;
+  }
+  
+  // Определение типа устройства
+  static bool isMobile(BuildContext context) =>
+      MediaQuery.of(context).size.width < mobileBreakpoint;
+      
+  static bool isTablet(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    return width >= mobileBreakpoint && width < desktopBreakpoint;
+  }
+  
+  static bool isDesktop(BuildContext context) =>
+      MediaQuery.of(context).size.width >= desktopBreakpoint;
+      
+  // Адаптивное количество колонок для grid
+  static int getGridColumns(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < mobileBreakpoint) return 1;
+    if (width < tabletBreakpoint) return 2;
+    if (width < desktopBreakpoint) return 3;
+    return 4;
+  }
+  
+  // Адаптивная высота AppBar
+  static double getAppBarHeight(BuildContext context) {
+    if (isMobile(context)) return 180;
+    if (isTablet(context)) return 200;
+    return 220;
+  }
+  
+  // Получение текущей темы (светлая/тёмная)
+  static bool isDarkMode(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
+      
+  // Динамические цвета в зависимости от темы
+  static Color getTextPrimary(BuildContext context) =>
+      isDarkMode(context) ? textPrimaryDark : textPrimaryLight;
+      
+  static Color getTextSecondary(BuildContext context) =>
+      isDarkMode(context) ? textSecondaryDark : textSecondaryLight;
+      
+  static Color getSurface(BuildContext context) =>
+      isDarkMode(context) ? surfaceDark : surfaceLight;
+      
+  static Color getCard(BuildContext context) =>
+      isDarkMode(context) ? cardDark : cardLight;
 }
