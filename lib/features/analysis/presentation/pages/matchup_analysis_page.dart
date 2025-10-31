@@ -5,7 +5,7 @@ import '../bloc/analysis_bloc.dart';
 import '../../../../core/utils/helpers.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/widgets/animated_widgets.dart';
+import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/matchup_stats.dart';
 
 class MatchupAnalysisPage extends StatefulWidget {

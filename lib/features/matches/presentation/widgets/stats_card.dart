@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/ui_constants.dart';
-import '../../../../core/widgets/base_card.dart';
+import '../../../../core/widgets/widgets.dart';
 
 class StatsCard extends BaseCard {
   final IconData icon;

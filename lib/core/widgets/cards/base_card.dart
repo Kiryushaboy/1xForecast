@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../constants/ui_constants.dart';
+import '../../theme/app_theme.dart';
+import '../../constants/ui_constants.dart';
 
 /// Базовый класс для всех карточек в приложении
 abstract class BaseCard extends StatelessWidget {
