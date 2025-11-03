@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -153,7 +155,7 @@ class _MatchupAnalysisPageState extends State<MatchupAnalysisPage>
 
   Widget _buildMainStatCard(MatchupStats stats) {
     final percentage = stats.bothScored6PlusPercentage;
-    final color = ColorUtils.getProbabilityColor(percentage);
+    ColorUtils.getProbabilityColor(percentage);
     final gradient = _getGradientForPercentage(percentage);
 
     return AnimatedBuilder(
