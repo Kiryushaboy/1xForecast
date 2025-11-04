@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/ui_constants.dart';
@@ -26,11 +28,12 @@ class MatchupCard extends BaseCard {
         child: Opacity(opacity: value, child: child),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _buildBadge(),
-          SizedBox(width: UiConstants.spacingLarge),
-          Expanded(child: _buildTeamInfo(context)),
-          _buildArrowIcon(),
+          _buildTeamWithIcon(context, homeTeam, true),
+          _buildVsBadge(),
+          _buildTeamWithIcon(context, awayTeam, false),
         ],
       ),
     );
@@ -39,16 +42,22 @@ class MatchupCard extends BaseCard {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: UiConstants.spacingMedium),
+      margin: const EdgeInsets.only(bottom: UiConstants.spacingMedium),
       decoration: BoxDecoration(
         color: AppTheme.getCard(context),
         borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
+        border: Border.all(
+          color: AppTheme.isDarkMode(context)
+              ? Colors.white.withOpacity(0.08)
+              : Colors.black.withOpacity(0.06),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
             color: (AppTheme.isDarkMode(context) ? Colors.black : Colors.black)
                 .withOpacity(AppTheme.isDarkMode(context) ? 0.15 : 0.06),
             blurRadius: UiConstants.elevationXHigh,
-            offset: Offset(0, UiConstants.elevationLow),
+            offset: const Offset(0, UiConstants.elevationLow),
           ),
         ],
       ),
@@ -58,7 +67,10 @@ class MatchupCard extends BaseCard {
           onTap: onTap,
           borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
           child: Padding(
-            padding: EdgeInsets.all(UiConstants.cardPaddingMedium),
+            padding: const EdgeInsets.symmetric(
+              horizontal: UiConstants.cardPaddingMedium,
+              vertical: UiConstants.cardPaddingMedium + 4,
+            ),
             child: buildContent(context),
           ),
         ),
@@ -66,95 +78,121 @@ class MatchupCard extends BaseCard {
     );
   }
 
-  Widget _buildBadge() {
-    return Container(
-      width: UiConstants.badgeSizeMedium,
-      height: UiConstants.badgeSizeMedium,
-      decoration: BoxDecoration(
-        gradient: AppTheme.primaryGradient,
-        borderRadius: BorderRadius.circular(UiConstants.borderRadiusLarge),
-      ),
-      child: Center(
-        child: Text(
-          '$matchCount',
-          style: const TextStyle(
-            fontSize: UiConstants.fontSizeXXLarge,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
+  Widget _buildTeamWithIcon(
+      BuildContext context, String teamName, bool isHome) {
+    final words = teamName.split(' ');
 
-  Widget _buildTeamInfo(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          homeTeam,
-          style: TextStyle(
-            fontSize: UiConstants.fontSizeLarge,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.getTextPrimary(context),
-            letterSpacing: UiConstants.letterSpacingTight,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(height: UiConstants.spacingSmall - 2),
-        Row(
-          children: [
+    return Expanded(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isHome) ...[
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: UiConstants.spacingSmall,
-                vertical: 3,
-              ),
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
-                color: AppTheme.getTextSecondary(context).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(UiConstants.borderRadiusSmall),
+                gradient: AppTheme.primaryGradient,
+                borderRadius:
+                    BorderRadius.circular(UiConstants.borderRadiusMedium),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primaryBlue.withOpacity(0.25),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: Text(
-                'VS',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.getTextSecondary(context),
-                  letterSpacing: UiConstants.letterSpacingWide,
+              child: const Center(
+                child: Icon(
+                  Icons.sports_soccer,
+                  size: 28,
+                  color: Colors.white,
                 ),
               ),
             ),
-            const SizedBox(width: UiConstants.spacingSmall),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
-                awayTeam,
+                words.join('\n'),
                 style: TextStyle(
-                  fontSize: UiConstants.fontSizeRegular,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
                   color: AppTheme.getTextPrimary(context),
-                  letterSpacing: UiConstants.letterSpacingTight,
+                  height: 1.3,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.left,
+                softWrap: true,
+              ),
+            ),
+          ] else ...[
+            Expanded(
+              child: Text(
+                words.join('\n'),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.getTextPrimary(context),
+                  height: 1.3,
+                ),
+                textAlign: TextAlign.right,
+                softWrap: true,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                gradient: AppTheme.primaryGradient,
+                borderRadius:
+                    BorderRadius.circular(UiConstants.borderRadiusMedium),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primaryBlue.withOpacity(0.25),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.sports_soccer,
+                  size: 28,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildArrowIcon() {
+  Widget _buildVsBadge() {
     return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: AppTheme.primaryBlue.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(UiConstants.borderRadiusMedium),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: 8,
       ),
-      child: const Icon(
-        Icons.arrow_forward_ios_rounded,
-        size: UiConstants.iconSizeSmall,
-        color: AppTheme.primaryBlue,
+      decoration: BoxDecoration(
+        gradient: AppTheme.primaryGradient,
+        borderRadius: BorderRadius.circular(UiConstants.borderRadiusMedium),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryBlue.withOpacity(0.25),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: const Text(
+        'VS',
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+          letterSpacing: 1.5,
+        ),
       ),
     );
   }

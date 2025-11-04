@@ -43,7 +43,7 @@ class StateWidget extends StatelessWidget {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 600),
-        margin: EdgeInsets.all(UiConstants.spacingLarge),
+        margin: const EdgeInsets.all(UiConstants.spacingLarge),
         padding: EdgeInsets.all(
           AppTheme.isMobile(context)
               ? UiConstants.cardPaddingLarge
@@ -69,7 +69,7 @@ class StateWidget extends StatelessWidget {
               )
             else
               _buildIcon(context),
-            SizedBox(height: UiConstants.spacingLarge),
+            const SizedBox(height: UiConstants.spacingLarge),
             Text(
               message ?? _getDefaultMessage(),
               style: TextStyle(
@@ -79,13 +79,13 @@ class StateWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (type == StateType.error && onRetry != null) ...[
-              SizedBox(height: UiConstants.spacingLarge),
+              const SizedBox(height: UiConstants.spacingLarge),
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
                 label: const Text('Повторить'),
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: UiConstants.spacingXLarge,
                     vertical: UiConstants.spacingMedium,
                   ),
@@ -104,7 +104,7 @@ class StateWidget extends StatelessWidget {
 
   Widget _buildIcon(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(UiConstants.spacingLarge),
+      padding: const EdgeInsets.all(UiConstants.spacingLarge),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(UiConstants.opacityMedium),
         borderRadius: BorderRadius.circular(UiConstants.borderRadiusLarge),

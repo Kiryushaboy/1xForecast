@@ -5,10 +5,12 @@ import '../../../../../core/theme/app_theme.dart';
 /// FAB для загрузки данных
 class HomeLoadDataFAB extends StatelessWidget {
   final VoidCallback onPressed;
+  final bool isLoading;
 
   const HomeLoadDataFAB({
     super.key,
     required this.onPressed,
+    this.isLoading = false,
   });
 
   @override
@@ -20,16 +22,26 @@ class HomeLoadDataFAB extends StatelessWidget {
           BoxShadow(
             color: AppTheme.primaryBlue.withOpacity(0.3),
             blurRadius: UiConstants.elevationHuge,
-            offset: Offset(0, UiConstants.elevationHigh),
+            offset: const Offset(0, UiConstants.elevationHigh),
           ),
         ],
       ),
       child: FloatingActionButton.extended(
-        onPressed: onPressed,
-        icon: Icon(Icons.download_rounded, size: UiConstants.fontSizeXXLarge),
+        onPressed: isLoading ? null : onPressed,
+        icon: isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : const Icon(Icons.download_rounded,
+                size: UiConstants.fontSizeXXLarge),
         label: Text(
-          'Загрузить',
-          style: TextStyle(
+          isLoading ? 'Загрузка...' : 'Загрузить',
+          style: const TextStyle(
             fontSize: UiConstants.fontSizeRegular,
             fontWeight: FontWeight.w600,
             letterSpacing: UiConstants.letterSpacingNormal,

@@ -1,9 +1,10 @@
 import '../../domain/entities/match.dart';
 import '../../domain/repositories/match_repository.dart';
-import '../datasources/match_local_datasource.dart';
+// import '../datasources/match_local_datasource.dart';
+import '../datasources/match_memory_datasource.dart';
 
 class MatchRepositoryImpl implements MatchRepository {
-  final MatchLocalDataSource _localDataSource;
+  final MatchMemoryDataSource _localDataSource;
 
   MatchRepositoryImpl(this._localDataSource);
 

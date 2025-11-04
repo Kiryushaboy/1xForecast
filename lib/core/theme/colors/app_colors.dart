@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // Основные цвета
+  // // Основные цвета
   static const Color primaryBlue = Color(0xFF1E88E5);
   static const Color primaryDark = Color(0xFF0D47A1);
   static const Color accentGreen = Color(0xFF4CAF50);

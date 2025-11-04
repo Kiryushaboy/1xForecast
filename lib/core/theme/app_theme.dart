@@ -7,21 +7,21 @@ class AppTheme {
   static const Color accentGreen = Color(0xFF4CAF50);
   static const Color accentOrange = Color(0xFFFF9800);
   static const Color accentRed = Color(0xFFE53935);
-  
+
   // Dark theme colors
   static const Color backgroundDark = Color(0xFF121212);
   static const Color surfaceDark = Color(0xFF1E1E1E);
   static const Color cardDark = Color(0xFF2C2C2C);
   static const Color textPrimaryDark = Color(0xFFFFFFFF);
   static const Color textSecondaryDark = Color(0xFFB0B0B0);
-  
-  // Light theme colors
-  static const Color backgroundLight = Color(0xFFF5F7FA);
-  static const Color surfaceLight = Color(0xFFFFFFFF);
-  static const Color cardLight = Color(0xFFFFFFFF);
-  static const Color textPrimaryLight = Color(0xFF1A1A1A);
-  static const Color textSecondaryLight = Color(0xFF6B6B6B);
-  
+
+  // Light theme colors - более контрастные, как в тёмной теме
+  static const Color backgroundLight = Color(0xFFE8EAF0);
+  static const Color surfaceLight = Color(0xFFF0F2F5);
+  static const Color cardLight = Color(0xFFF8F9FB);
+  static const Color textPrimaryLight = Color(0xFF0D0D0D);
+  static const Color textSecondaryLight = Color(0xFF4A4A4A);
+
   static const Color textHint = Color(0xFF757575);
 
   // Градиенты
@@ -54,7 +54,7 @@ class AppTheme {
     brightness: Brightness.dark,
     primaryColor: primaryBlue,
     scaffoldBackgroundColor: backgroundDark,
-    
+
     colorScheme: const ColorScheme.dark(
       primary: primaryBlue,
       secondary: accentGreen,
@@ -154,13 +154,12 @@ class AppTheme {
     brightness: Brightness.light,
     primaryColor: primaryBlue,
     scaffoldBackgroundColor: backgroundLight,
-    
+
     colorScheme: const ColorScheme.light(
       primary: primaryBlue,
       secondary: accentGreen,
       surface: surfaceLight,
       error: accentRed,
-      background: backgroundLight,
     ),
 
     // AppBar theme
@@ -179,8 +178,8 @@ class AppTheme {
     // Card theme
     cardTheme: CardThemeData(
       color: cardLight,
-      elevation: 2,
-      shadowColor: Colors.black12,
+      elevation: 3,
+      shadowColor: Colors.black26,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -255,12 +254,12 @@ class AppTheme {
   // Утилиты для анимаций
   static const Duration defaultAnimationDuration = Duration(milliseconds: 300);
   static const Curve defaultAnimationCurve = Curves.easeInOut;
-  
+
   // Адаптивные брейкпоинты
   static const double mobileBreakpoint = 600;
   static const double tabletBreakpoint = 900;
   static const double desktopBreakpoint = 1200;
-  
+
   // Адаптивные паддинги - более воздушные
   static double getHorizontalPadding(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -269,26 +268,26 @@ class AppTheme {
     if (width < desktopBreakpoint) return 48;
     return 64;
   }
-  
+
   static double getVerticalPadding(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     if (width < mobileBreakpoint) return 16;
     if (width < tabletBreakpoint) return 20;
     return 28;
   }
-  
+
   // Определение типа устройства
   static bool isMobile(BuildContext context) =>
       MediaQuery.of(context).size.width < mobileBreakpoint;
-      
+
   static bool isTablet(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return width >= mobileBreakpoint && width < desktopBreakpoint;
   }
-  
+
   static bool isDesktop(BuildContext context) =>
       MediaQuery.of(context).size.width >= desktopBreakpoint;
-      
+
   // Адаптивное количество колонок для grid
   static int getGridColumns(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -297,28 +296,28 @@ class AppTheme {
     if (width < desktopBreakpoint) return 3;
     return 4;
   }
-  
+
   // Адаптивная высота AppBar - более компактная
   static double getAppBarHeight(BuildContext context) {
-    if (isMobile(context)) return 160;
-    if (isTablet(context)) return 180;
-    return 200;
+    if (isMobile(context)) return 120;
+    if (isTablet(context)) return 130;
+    return 140;
   }
-  
+
   // Получение текущей темы (светлая/тёмная)
   static bool isDarkMode(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark;
-      
+
   // Динамические цвета в зависимости от темы
   static Color getTextPrimary(BuildContext context) =>
       isDarkMode(context) ? textPrimaryDark : textPrimaryLight;
-      
+
   static Color getTextSecondary(BuildContext context) =>
       isDarkMode(context) ? textSecondaryDark : textSecondaryLight;
-      
+
   static Color getSurface(BuildContext context) =>
       isDarkMode(context) ? surfaceDark : surfaceLight;
-      
+
   static Color getCard(BuildContext context) =>
       isDarkMode(context) ? cardDark : cardLight;
 }

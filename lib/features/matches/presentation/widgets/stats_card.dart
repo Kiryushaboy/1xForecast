@@ -25,7 +25,7 @@ class StatsCard extends BaseCard {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(UiConstants.spacingMedium),
+            padding: const EdgeInsets.all(UiConstants.spacingMedium),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(UiConstants.opacityMedium),
               borderRadius: BorderRadius.circular(UiConstants.borderRadiusLarge),
