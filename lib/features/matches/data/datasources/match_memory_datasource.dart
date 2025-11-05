@@ -1,22 +1,12 @@
 import '../../domain/entities/match.dart';
-import 'test_data_generator.dart';
 
-/// Временное хранилище в памяти для отладки в браузере
-/// Использует простой List вместо Hive
+/// Хранилище в памяти для матчей
+/// Данные загружаются из кеша через MatchBloc
 class MatchMemoryDataSource {
   // Хранилище в памяти
   final List<Match> _matches = [];
-  bool _testDataLoaded = false;
 
   Future<List<Match>> getMatches() async {
-    // Автоматически загружаем тестовые данные при первом запросе
-    if (!_testDataLoaded && _matches.isEmpty) {
-      _matches.addAll(TestDataGenerator.generateTestMatches());
-      _testDataLoaded = true;
-      print('🎯 Загружено ${_matches.length} тестовых матчей');
-      print(TestDataGenerator.getTestDataSummary());
-    }
-
     // Возвращаем копию списка, чтобы избежать модификации оригинала
     return List<Match>.from(_matches);
   }

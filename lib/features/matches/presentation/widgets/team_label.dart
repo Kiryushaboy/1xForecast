@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/constants/ui_constants.dart';
+import '../../../../core/widgets/team_logo.dart';
 
 /// Универсальный виджет для отображения названия команды с иконкой
 /// Используется вместо дублирующихся условных конструкций
@@ -21,27 +21,9 @@ class TeamLabel extends StatelessWidget {
     final words = teamName.split(' ');
     final textAlign = iconFirst ? TextAlign.left : TextAlign.right;
 
-    final icon = Container(
-      width: 52,
-      height: 52,
-      decoration: BoxDecoration(
-        gradient: AppTheme.primaryGradient,
-        borderRadius: BorderRadius.circular(UiConstants.borderRadiusMedium),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primaryBlue.withOpacity(0.25),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: const Center(
-        child: Icon(
-          Icons.sports_soccer,
-          size: 28,
-          color: Colors.white,
-        ),
-      ),
+    final icon = TeamLogo(
+      teamName: teamName,
+      size: 72,
     );
 
     final text = Expanded(

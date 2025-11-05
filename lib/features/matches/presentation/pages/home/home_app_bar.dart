@@ -90,14 +90,14 @@ class HomeAppBar extends StatelessWidget {
                     ),
                     background: Stack(
                       children: [
-                        // Декоративный элемент - футбольный мяч в правом верхнем углу
+                        // Декоративный элемент - иконка аналитики в правом верхнем углу
                         Positioned(
                           top: 20,
                           right: 20,
                           child: Opacity(
                             opacity: 0.12 * (1.0 - scrollRatio),
                             child: const Icon(
-                              Icons.sports_soccer,
+                              Icons.bar_chart_rounded,
                               size: 80,
                               color: Colors.white,
                             ),

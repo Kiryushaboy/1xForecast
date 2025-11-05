@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../../../core/constants/ui_constants.dart';
 import '../../../../../../core/theme/app_theme.dart';
+import '../../../../../../core/services/team_logo_service.dart';
 import '../utils/team_name_helper.dart';
 
 /// AppBar для страницы анализа матча
@@ -51,23 +52,19 @@ class AnalysisAppBar extends StatelessWidget {
               child: Stack(
                 children: [
                   // Background декорации
-                  const Positioned.fill(
+                  Positioned.fill(
                     child: Stack(
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            // Декоративный элемент - футбольный мяч (левый)
+                            // Логотип команды хозяев (левый)
                             Opacity(
-                              opacity: 0.08,
-                              child: Icon(
-                                Icons.sports_soccer,
-                                size: 100,
-                                color: Colors.white,
-                              ),
+                              opacity: 0.12,
+                              child: _buildTeamLogoBackground(homeTeam),
                             ),
                             // Надпись FIFA FC24. 4x4
-                            Center(
+                            const Center(
                               child: Padding(
                                 padding: EdgeInsets.only(bottom: 60),
                                 child: Opacity(
@@ -85,14 +82,10 @@ class AnalysisAppBar extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // Декоративный элемент - футбольный мяч (правый)
+                            // Логотип команды гостей (правый)
                             Opacity(
-                              opacity: 0.08,
-                              child: Icon(
-                                Icons.sports_soccer,
-                                size: 100,
-                                color: Colors.white,
-                              ),
+                              opacity: 0.12,
+                              child: _buildTeamLogoBackground(awayTeam),
                             ),
                           ],
                         ),
@@ -190,6 +183,48 @@ class AnalysisAppBar extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTeamLogoBackground(String teamName) {
+    final logoUrl = TeamLogoService.getTeamLogoUrl(teamName);
+
+    if (logoUrl.isEmpty) {
+      // Fallback на иконку мяча если нет логотипа
+      return const Icon(
+        Icons.sports_soccer,
+        size: 100,
+        color: Colors.white,
+      );
+    }
+
+    return SizedBox(
+      width: 100,
+      height: 100,
+      child: Image.network(
+        logoUrl,
+        width: 100,
+        height: 100,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+        cacheWidth: 200, // Загружаем в 2x разрешении
+        cacheHeight: 200,
+        errorBuilder: (context, error, stackTrace) {
+          return const Icon(
+            Icons.sports_soccer,
+            size: 100,
+            color: Colors.white,
+          );
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return const Icon(
+            Icons.sports_soccer,
+            size: 100,
+            color: Colors.white,
+          );
+        },
       ),
     );
   }

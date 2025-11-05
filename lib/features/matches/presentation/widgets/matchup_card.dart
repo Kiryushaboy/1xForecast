@@ -97,18 +97,14 @@ class MatchupCard extends BaseCard {
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: UiConstants.cardPaddingMedium,
-              vertical: UiConstants.cardPaddingMedium + 4,
-            ),
-            child: buildContent(context),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: UiConstants.cardPaddingMedium,
+            vertical: UiConstants.cardPaddingMedium + 4,
           ),
+          child: buildContent(context),
         ),
       ),
     );

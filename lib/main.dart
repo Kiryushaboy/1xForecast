@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
-// import 'features/matches/data/datasources/match_local_datasource.dart';
+import 'core/services/match_cache_service.dart';
+import 'core/services/scheduled_update_service.dart';
+import 'core/services/betting_parser_service.dart';
 import 'features/matches/data/datasources/match_memory_datasource.dart';
 import 'features/matches/data/repositories/match_repository_impl.dart';
 import 'features/matches/presentation/bloc/match_bloc.dart';
@@ -16,14 +17,36 @@ void main() async {
   // Initialize date formatting for Russian locale
   await initializeDateFormatting('ru', null);
 
-  // Initialize Hive
-  // await Hive.initFlutter();
+  // Initialize services
+  final cacheService = MatchCacheService();
+  await cacheService.initialize();
 
-  runApp(const MyApp());
+  final parserService = BettingParserService();
+
+  final updateService = ScheduledUpdateService(
+    parserService: parserService,
+    onDataParsed: (matches) async {
+      await cacheService.cacheMatches(matches);
+    },
+  );
+
+  await updateService.initialize();
+
+  runApp(MyApp(
+    cacheService: cacheService,
+    updateService: updateService,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final MatchCacheService cacheService;
+  final ScheduledUpdateService updateService;
+
+  const MyApp({
+    super.key,
+    required this.cacheService,
+    required this.updateService,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +57,11 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => MatchBloc(repository)..add(LoadMatches()),
+          create: (context) => MatchBloc(
+            repository: repository,
+            cacheService: cacheService,
+            updateService: updateService,
+          )..add(FetchCachedMatches()),
         ),
         BlocProvider(
           create: (context) => AnalysisBloc(repository),

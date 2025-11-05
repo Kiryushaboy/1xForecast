@@ -1,8 +1,11 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../../matches/domain/entities/match.dart';
 import '../../../../../../core/theme/app_theme.dart';
 import '../../../../../../core/constants/ui_constants.dart';
+import '../../../../../../core/widgets/team_logo.dart';
 
 /// Виджет для отображения одного матча из истории
 class MatchHistoryCard extends StatelessWidget {
@@ -15,14 +18,11 @@ class MatchHistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('dd.MM.yy');
-    final formattedDate = dateFormat.format(match.date);
-
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: UiConstants.spacingMedium),
       decoration: BoxDecoration(
         color: AppTheme.getCard(context),
-        borderRadius: BorderRadius.circular(UiConstants.borderRadiusLarge),
+        borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
         border: Border.all(
           color: AppTheme.isDarkMode(context)
               ? Colors.white.withOpacity(0.08)
@@ -32,136 +32,101 @@ class MatchHistoryCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: (AppTheme.isDarkMode(context) ? Colors.black : Colors.black)
-                .withOpacity(AppTheme.isDarkMode(context) ? 0.15 : 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+                .withOpacity(AppTheme.isDarkMode(context) ? 0.15 : 0.06),
+            blurRadius: UiConstants.elevationXHigh,
+            offset: const Offset(0, UiConstants.elevationLow),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
+        padding: const EdgeInsets.symmetric(
+          horizontal: UiConstants.cardPaddingMedium,
+          vertical: UiConstants.cardPaddingMedium + 4,
+        ),
+        child: Column(
           children: [
-            // Дата
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-              decoration: BoxDecoration(
-                color: AppTheme.isDarkMode(context)
-                    ? Colors.white.withOpacity(0.05)
-                    : Colors.black.withOpacity(0.03),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                formattedDate,
-                style: TextStyle(
-                  color: AppTheme.getTextSecondary(context),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-
-            const SizedBox(width: 12),
-
             // Команды и счёт
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Хозяева
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.home_rounded,
-                        size: 14,
-                        color: AppTheme.getTextSecondary(context),
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          match.homeTeam,
-                          style: TextStyle(
-                            color: AppTheme.getTextPrimary(context),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      _buildScoreBadge(context, match.homeScore),
-                    ],
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // Гости
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.flight_rounded,
-                        size: 14,
-                        color: AppTheme.getTextSecondary(context),
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          match.awayTeam,
-                          style: TextStyle(
-                            color: AppTheme.getTextPrimary(context),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      _buildScoreBadge(context, match.awayScore),
-                    ],
-                  ),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildTeamLabel(context, match.homeTeam, true),
+                _buildScoreBadge(
+                    context, match.homeScore, match.awayScore, match.date),
+                _buildTeamLabel(context, match.awayTeam, false),
+              ],
             ),
-
-            // Индикатор высокого счёта
-            if (match.isHighScoring) ...[
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF66bb6a).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Icon(
-                  Icons.star_rounded,
-                  color: Color(0xFF66bb6a),
-                  size: 16,
-                ),
-              ),
-            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildScoreBadge(BuildContext context, int score) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppTheme.isDarkMode(context)
-            ? Colors.white.withOpacity(0.08)
-            : Colors.black.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(6),
-      ),
+  Widget _buildTeamLabel(
+      BuildContext context, String teamName, bool iconFirst) {
+    final words = teamName.split(' ');
+    final textAlign = iconFirst ? TextAlign.left : TextAlign.right;
+
+    final icon = TeamLogo(
+      teamName: teamName,
+      size: 72,
+    );
+
+    final text = Expanded(
       child: Text(
-        score.toString(),
+        words.join('\n'),
         style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
           color: AppTheme.getTextPrimary(context),
-          fontSize: 14,
-          fontWeight: FontWeight.w900,
+          height: 1.3,
         ),
+        textAlign: textAlign,
+        softWrap: true,
       ),
+    );
+
+    return Expanded(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: iconFirst
+            ? [icon, const SizedBox(width: 10), text]
+            : [text, const SizedBox(width: 10), icon],
+      ),
+    );
+  }
+
+  Widget _buildScoreBadge(
+      BuildContext context, int homeScore, int awayScore, DateTime date) {
+    final dateFormat = DateFormat('dd.MM.yy');
+    final formattedDate = dateFormat.format(date);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ShaderMask(
+          shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(
+            Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+          ),
+          child: Text(
+            '$homeScore:$awayScore',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: 1.0,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          formattedDate,
+          style: const TextStyle(
+            color: AppTheme.primaryDark,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
     );
   }
 }

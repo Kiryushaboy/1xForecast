@@ -6,10 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/theme_extensions.dart';
 import '../../../../core/widgets/states/state_widget.dart';
 import '../bloc/match_bloc.dart';
-import '../../data/datasources/bet_parser_service.dart';
 import '../../domain/entities/matchup.dart';
 import 'home/home_app_bar.dart';
-import 'home/home_load_data_fab.dart';
 import 'home/home_matchups_content.dart';
 
 /// Главная страница приложения
@@ -49,27 +47,28 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-          },
-          scrollbars: false,
+      body: RefreshIndicator(
+        onRefresh: () => _handleRefresh(context),
+        child: ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(
+            dragDevices: {
+              PointerDeviceKind.touch,
+              PointerDeviceKind.mouse,
+            },
+            scrollbars: false,
+          ),
+          child: CustomScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            slivers: [
+              HomeAppBar(onSearchTap: _scrollToSearch),
+              _buildSearchBar(context),
+              _buildContent(context),
+            ],
+          ),
         ),
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            HomeAppBar(onSearchTap: _scrollToSearch),
-            _buildSearchBar(context),
-            _buildContent(context),
-          ],
-        ),
-      ),
-      floatingActionButton: HomeLoadDataFAB(
-        onPressed: () => _handleLoadData(context),
-        isLoading: _isLoading,
       ),
     );
   }
@@ -84,7 +83,7 @@ class _HomePageState extends State<HomePage> {
             final filtered = _filterMatchups(matchups);
             resultsCount = filtered.length;
           }
-          
+
           return Padding(
             padding: EdgeInsets.fromLTRB(
               context.horizontalPadding,
@@ -447,28 +446,33 @@ class _HomePageState extends State<HomePage> {
       ..sort((a, b) => b.matchCount.compareTo(a.matchCount));
   }
 
-  Future<void> _handleLoadData(BuildContext context) async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  Future<void> _handleRefresh(BuildContext context) async {
     try {
-      final betParser = BetParserService();
-      final matches = await betParser.fetchMatches();
+      print('🔄 Запуск обновления данных...');
+
+      // Запускаем обновление через RefreshMatches event
+      context.read<MatchBloc>().add(RefreshMatches());
+
+      // Ждем завершения обновления
+      await context
+          .read<MatchBloc>()
+          .stream
+          .firstWhere((state) => state is MatchLoaded || state is MatchError);
 
       if (context.mounted) {
-        context.read<MatchBloc>().add(SaveMatches(matches));
-        _showSuccessSnackBar(context, matches.length);
+        final state = context.read<MatchBloc>().state;
+        if (state is MatchLoaded) {
+          print('✅ Обновление завершено: ${state.matches.length} матчей');
+          _showSuccessSnackBar(context, state.matches.length);
+        } else if (state is MatchError) {
+          print('❌ Ошибка обновления: ${state.message}');
+          _showErrorSnackBar(context, state.message);
+        }
       }
     } catch (e) {
+      print('❌ Исключение при обновлении: $e');
       if (context.mounted) {
         _showErrorSnackBar(context, e.toString());
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
   }

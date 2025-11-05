@@ -9,22 +9,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:forecast_app/main.dart';
+import 'package:forecast_app/core/services/match_cache_service.dart';
+import 'package:forecast_app/core/services/scheduled_update_service.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App initializes correctly', (WidgetTester tester) async {
+    // Initialize services for testing
+    final cacheService = MatchCacheService();
+    await cacheService.initialize();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    final updateService = ScheduledUpdateService(
+      onDataParsed: (matches) async {
+        await cacheService.cacheMatches(matches);
+      },
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Build our app and trigger a frame
+    await tester.pumpWidget(MyApp(
+      cacheService: cacheService,
+      updateService: updateService,
+    ));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that the app builds without errors
+    expect(find.byType(MaterialApp), findsOneWidget);
+
+    // Clean up
+    await cacheService.dispose();
+    updateService.dispose();
   });
 }
