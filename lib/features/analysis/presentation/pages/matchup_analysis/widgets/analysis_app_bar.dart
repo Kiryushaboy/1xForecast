@@ -2,7 +2,6 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../../../core/constants/ui_constants.dart';
 import '../../../../../../core/theme/app_theme.dart';
 import '../utils/team_name_helper.dart';
@@ -21,9 +20,10 @@ class AnalysisAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 130,
-      collapsedHeight: kToolbarHeight + 16,
+      expandedHeight: 110,
+      collapsedHeight: 110,
       pinned: true,
+      floating: false,
       backgroundColor: Colors.transparent,
       elevation: 0,
       clipBehavior: Clip.antiAlias,
@@ -50,121 +50,139 @@ class AnalysisAppBar extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  // Кнопка назад - выровнена по названиям команд
-                  Positioned(
-                    left: 8,
-                    bottom: UiConstants.spacingLarge + 20,
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: Colors.white,
-                        size: 22,
-                      ),
-                      onPressed: () => context.go('/'),
-                    ),
-                  ),
-                  // FlexibleSpace с заголовком
-                  FlexibleSpaceBar(
-                    centerTitle: false,
-                    titlePadding: const EdgeInsets.only(
-                      left: 60,
-                      right: UiConstants.spacingLarge,
-                      bottom: UiConstants.spacingLarge + 4,
-                    ),
-                    title: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  // Background декорации
+                  const Positioned.fill(
+                    child: Stack(
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Expanded(
-                              child: Text(
-                                TeamNameHelper.abbreviate(homeTeam),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                  height: 1.2,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                            // Декоративный элемент - футбольный мяч (левый)
+                            Opacity(
+                              opacity: 0.08,
+                              child: Icon(
+                                Icons.sports_soccer,
+                                size: 100,
+                                color: Colors.white,
                               ),
                             ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8),
-                              child: Text(
-                                'vs',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
+                            // Надпись FIFA FC24. 4x4
+                            Center(
+                              child: Padding(
+                                padding: EdgeInsets.only(bottom: 60),
+                                child: Opacity(
+                                  opacity: 0.15,
+                                  child: Text(
+                                    'FIFA FC24. 4x4',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                            Expanded(
-                              child: Text(
-                                TeamNameHelper.abbreviate(awayTeam),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                  height: 1.2,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                            // Декоративный элемент - футбольный мяч (правый)
+                            Opacity(
+                              opacity: 0.08,
+                              child: Icon(
+                                Icons.sports_soccer,
+                                size: 100,
+                                color: Colors.white,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Детальный анализ матча',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
-                            color: Colors.white.withOpacity(0.9),
-                            letterSpacing: 0.3,
-                          ),
-                        ),
                       ],
                     ),
-                    background: const Stack(
-                      children: [
-                        // Декоративный элемент - футбольный мяч
-                        Positioned(
-                          top: 15,
-                          right: 15,
-                          child: Opacity(
-                            opacity: 0.08,
-                            child: Icon(
-                              Icons.sports_soccer,
-                              size: 100,
-                              color: Colors.white,
+                  ),
+                  // Контент поверх фона
+                  Positioned.fill(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: UiConstants.spacingLarge,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          // Строка с командами и VS
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                bottom: UiConstants.spacingLarge + 4),
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: 26,
+                                  child: Row(
+                                    children: [
+                                      // Левая команда (хозяева)
+                                      Expanded(
+                                        child: Text(
+                                          TeamNameHelper.abbreviate(homeTeam),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 20,
+                                            color: Colors.white,
+                                            letterSpacing: 0.5,
+                                            height: 1.2,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.right,
+                                        ),
+                                      ),
+                                      // VS по центру с отступами
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 55),
+                                        child: Text(
+                                          'VS',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 20,
+                                            color: Colors.white,
+                                            letterSpacing: 1.5,
+                                          ),
+                                        ),
+                                      ),
+                                      // Правая команда (гости)
+                                      Expanded(
+                                        child: Text(
+                                          TeamNameHelper.abbreviate(awayTeam),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 20,
+                                            color: Colors.white,
+                                            letterSpacing: 0.5,
+                                            height: 1.2,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                // Подзаголовок
+                                Text(
+                                  'Анализ матча',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    color: Colors.white.withOpacity(0.9),
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        // Надпись FIFA FC24. 4x4
-                        Positioned(
-                          top: 20,
-                          right: 135,
-                          child: Opacity(
-                            opacity: 0.12,
-                            child: Text(
-                              'FIFA FC24. 4x4',
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 16,
-                                color: Colors.white,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],

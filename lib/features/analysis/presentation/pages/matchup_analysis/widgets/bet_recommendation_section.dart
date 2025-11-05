@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import '../../../../domain/entities/matchup_stats.dart';
 import '../../../../../matches/domain/services/bet_analysis_service.dart';
@@ -55,16 +57,18 @@ class BetRecommendationSection extends StatelessWidget {
 
     // Используем сервис анализа
     final analysisService = BetAnalysisService();
-    final recommendation = analysisService.analyzeBestBet(
+    final allBets = analysisService.getAllBets(
       matches,
       awayTeam, // team1 - гости
       homeTeam, // team2 - хозяева
     );
 
-    debugPrint('Recommendation: ${recommendation.name}');
-    debugPrint('Probability: ${recommendation.probability}%');
+    debugPrint('All bets count: ${allBets.length}');
+    for (var bet in allBets) {
+      debugPrint('${bet.name}: ${bet.probability.toStringAsFixed(1)}%');
+    }
     debugPrint('================================');
 
-    return BetRecommendationCard(recommendation: recommendation);
+    return BetRecommendationCard(allBets: allBets);
   }
 }

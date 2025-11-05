@@ -1,8 +1,9 @@
+// ignore_for_file: deprecated_member_use, unused_local_variable
+
 import 'package:flutter/material.dart';
 import '../../../../../../core/constants/ui_constants.dart';
 import '../../../../../../core/theme/app_theme.dart';
 import '../../../../../../core/services/percentage_color_service.dart';
-import '../../../../../../core/widgets/widgets.dart';
 import '../../../../domain/entities/matchup_stats.dart';
 
 /// Карточка с главной статистикой "Обе команды забили 6+"
@@ -20,43 +21,39 @@ class MainStatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final percentage = stats.bothScored6PlusPercentage;
     final color = PercentageColorService.getColor(percentage);
-    final gradient = PercentageColorService.getGradient(percentage);
 
-    return GlassmorphicCard(
-      accentColor: color,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.getCard(context),
+        borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
+        border: Border.all(
+          color: AppTheme.isDarkMode(context)
+              ? Colors.white.withOpacity(0.08)
+              : Colors.black.withOpacity(0.06),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: (AppTheme.isDarkMode(context) ? Colors.black : Colors.black)
+                .withOpacity(AppTheme.isDarkMode(context) ? 0.15 : 0.06),
+            blurRadius: UiConstants.elevationXHigh,
+            offset: const Offset(0, UiConstants.elevationLow),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(UiConstants.cardPaddingLarge),
       child: Column(
         children: [
-          // Заголовок с иконкой
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              gradient: gradient,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.sports_soccer,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-          const SizedBox(height: UiConstants.spacingMedium),
+          // Заголовок
           Text(
             'Обе команды забили 6+',
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.getTextPrimary(context),
+              color: AppTheme.getTextSecondary(context),
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: UiConstants.spacingLarge),
+          const SizedBox(height: UiConstants.spacingMedium),
 
           // Процент
           AnimatedBuilder(
@@ -76,7 +73,6 @@ class MainStatCard extends StatelessWidget {
             },
           ),
           const SizedBox(height: UiConstants.spacingMedium),
-
           // Счетчик матчей
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -108,7 +104,7 @@ class MainStatCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: SizedBox(
-              height: 8,
+              height: 10,
               child: AnimatedBuilder(
                 animation: percentageAnimation,
                 builder: (context, child) {

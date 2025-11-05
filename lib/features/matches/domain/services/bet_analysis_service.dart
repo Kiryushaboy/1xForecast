@@ -23,9 +23,9 @@ class BetRecommendation {
 }
 
 enum RecommendationLevel {
-  notRecommended, // < 62%
-  medium, // 62-75%
-  recommended, // > 75%
+  notRecommended, // < 65%
+  medium, // 65-90%
+  recommended, // > 90%
 }
 
 class BetAnalysisService {
@@ -86,9 +86,9 @@ class BetAnalysisService {
   }
 
   RecommendationLevel _getRecommendationLevel(double probability) {
-    if (probability < 62) {
+    if (probability < 65) {
       return RecommendationLevel.notRecommended;
-    } else if (probability <= 75) {
+    } else if (probability <= 90) {
       return RecommendationLevel.medium;
     } else {
       return RecommendationLevel.recommended;
@@ -117,5 +117,76 @@ class BetAnalysisService {
       'team2Over7_5':
           matches.where((m) => m.homeScore >= 8).length / total * 100,
     };
+  }
+
+  /// Получить список всех ставок отсортированных по вероятности
+  List<BetRecommendation> getAllBets(
+      List<Match> matches, String team1, String team2) {
+    if (matches.isEmpty) {
+      return [];
+    }
+
+    final total = matches.length.toDouble();
+
+    // a) Обе забьют по 6 и более
+    final bothScore6Plus =
+        matches.where((m) => m.homeScore >= 6 && m.awayScore >= 6).length /
+            total *
+            100;
+
+    // b) ИТБ 6.5 - Первая команда (гости)
+    final team1Over6_5 =
+        matches.where((m) => m.awayScore >= 7).length / total * 100;
+
+    // c) ИТБ 7.5 - Первая команда (гости)
+    final team1Over7_5 =
+        matches.where((m) => m.awayScore >= 8).length / total * 100;
+
+    // d) ИТБ 6.5 - Вторая команда (хозяева)
+    final team2Over6_5 =
+        matches.where((m) => m.homeScore >= 7).length / total * 100;
+
+    // e) ИТБ 7.5 - Вторая команда (хозяева)
+    final team2Over7_5 =
+        matches.where((m) => m.homeScore >= 8).length / total * 100;
+
+    // Создаём список всех ставок
+    final bets = [
+      BetRecommendation(
+        type: BetType.bothScore6Plus,
+        name: 'Обе забьют по 6+',
+        probability: bothScore6Plus,
+        level: _getRecommendationLevel(bothScore6Plus),
+      ),
+      BetRecommendation(
+        type: BetType.team1Over6_5,
+        name: 'ИТБ 6.5 $team1',
+        probability: team1Over6_5,
+        level: _getRecommendationLevel(team1Over6_5),
+      ),
+      BetRecommendation(
+        type: BetType.team1Over7_5,
+        name: 'ИТБ 7.5 $team1',
+        probability: team1Over7_5,
+        level: _getRecommendationLevel(team1Over7_5),
+      ),
+      BetRecommendation(
+        type: BetType.team2Over6_5,
+        name: 'ИТБ 6.5 $team2',
+        probability: team2Over6_5,
+        level: _getRecommendationLevel(team2Over6_5),
+      ),
+      BetRecommendation(
+        type: BetType.team2Over7_5,
+        name: 'ИТБ 7.5 $team2',
+        probability: team2Over7_5,
+        level: _getRecommendationLevel(team2Over7_5),
+      ),
+    ];
+
+    // Сортируем по убыванию вероятности
+    bets.sort((a, b) => b.probability.compareTo(a.probability));
+
+    return bets;
   }
 }

@@ -1,11 +1,15 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../bloc/analysis_bloc.dart';
 import '../../domain/entities/matchup_stats.dart';
 import 'matchup_analysis/widgets/analysis_app_bar.dart';
 import 'matchup_analysis/widgets/analysis_states.dart';
-import 'matchup_analysis/widgets/main_stat_card.dart';
-import 'matchup_analysis/widgets/bet_recommendation_section.dart';
+import 'matchup_analysis/widgets/combined_analysis_card.dart';
+import 'matchup_analysis/widgets/match_history_list.dart';
 
 /// Страница детального анализа матча между двумя командами
 class MatchupAnalysisPage extends StatefulWidget {
@@ -58,6 +62,7 @@ class _MatchupAnalysisPageState extends State<MatchupAnalysisPage>
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
           // AppBar с названиями команд
           AnalysisAppBar(
@@ -67,60 +72,92 @@ class _MatchupAnalysisPageState extends State<MatchupAnalysisPage>
 
           // Контент страницы
           SliverToBoxAdapter(
-            child: BlocConsumer<AnalysisBloc, AnalysisState>(
-              listener: (context, state) {
-                if (state is MatchupStatsLoaded) {
-                  setState(() {
-                    _stats = state.stats;
-                  });
-                  _percentageController.forward();
-                }
-              },
-              builder: (context, state) {
-                // Состояние загрузки
-                if (state is AnalysisLoading && _stats == null) {
-                  return const AnalysisLoadingState();
-                }
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: BlocConsumer<AnalysisBloc, AnalysisState>(
+                listener: (context, state) {
+                  if (state is MatchupStatsLoaded) {
+                    setState(() {
+                      _stats = state.stats;
+                    });
+                    _percentageController.forward();
+                  }
+                },
+                builder: (context, state) {
+                  // Состояние загрузки
+                  if (state is AnalysisLoading && _stats == null) {
+                    return const AnalysisLoadingState();
+                  }
 
-                // Состояние ошибки
-                if (state is AnalysisError) {
-                  return AnalysisErrorState(message: state.message);
-                }
+                  // Состояние ошибки
+                  if (state is AnalysisError) {
+                    return AnalysisErrorState(message: state.message);
+                  }
 
-                // Показываем загрузку если данных еще нет
-                if (_stats == null) {
-                  return const AnalysisLoadingState();
-                }
+                  // Показываем загрузку если данных еще нет
+                  if (_stats == null) {
+                    return const AnalysisLoadingState();
+                  }
 
-                // Основной контент
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Рекомендация ставки
-                      BetRecommendationSection(
-                        stats: _stats!,
-                        homeTeam: widget.homeTeam,
-                        awayTeam: widget.awayTeam,
-                      ),
-                      const SizedBox(height: 48),
-
-                      // Основная статистика по центру
-                      Center(
-                        child: MainStatCard(
+                  // Основной контент
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 15),
+                    child: Column(
+                      children: [
+                        // Объединённая карточка с процентом и рекомендацией
+                        CombinedAnalysisCard(
                           stats: _stats!,
                           percentageAnimation: _percentageAnimation,
+                          homeTeam: widget.homeTeam,
+                          awayTeam: widget.awayTeam,
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                        const SizedBox(height: 24),
+                        // История матчей за последние 30 дней
+                        MatchHistoryList(
+                          matches: _stats!.matches,
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
       ),
+      // Плавающая кнопка назад внизу экрана
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: AppTheme.primaryGradient,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primaryBlue.withOpacity(0.4),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => context.go('/'),
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              width: 56,
+              height: 56,
+              alignment: Alignment.center,
+              child: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 }

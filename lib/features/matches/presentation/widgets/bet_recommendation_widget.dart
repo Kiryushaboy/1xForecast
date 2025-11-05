@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import '../../../../core/constants/ui_constants.dart';
 import '../../../../core/services/recommendation_level_service.dart';
