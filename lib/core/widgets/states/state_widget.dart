@@ -1,7 +1,9 @@
+// ignore_for_file: deprecated_member_use
+
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../constants/ui_constants.dart';
-import '../animations/pulse_animation.dart';
 
 enum StateType { loading, error, empty }
 
@@ -11,23 +13,20 @@ class StateWidget extends StatelessWidget {
   final String? message;
   final VoidCallback? onRetry;
   final IconData? icon;
-  final Gradient? gradient;
 
   const StateWidget.loading({
     super.key,
     this.message = 'Загрузка данных...',
   })  : type = StateType.loading,
         onRetry = null,
-        icon = Icons.sports_soccer,
-        gradient = null;
+        icon = Icons.sports_soccer;
 
   const StateWidget.error({
     super.key,
     required this.message,
     required this.onRetry,
   })  : type = StateType.error,
-        icon = Icons.error_outline,
-        gradient = null;
+        icon = Icons.error_outline;
 
   const StateWidget.empty({
     super.key,
@@ -35,122 +34,180 @@ class StateWidget extends StatelessWidget {
     String? title,
   })  : type = StateType.empty,
         onRetry = null,
-        icon = Icons.inbox_outlined,
-        gradient = null;
+        icon = Icons.inbox_outlined;
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 600),
-        margin: const EdgeInsets.all(UiConstants.spacingLarge),
-        padding: EdgeInsets.all(
-          AppTheme.isMobile(context)
-              ? UiConstants.cardPaddingLarge
-              : UiConstants.cardPaddingXLarge,
-        ),
-        decoration: BoxDecoration(
-          gradient: _getGradient(),
-          borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
-          boxShadow: [
-            BoxShadow(
-              color: _getShadowColor().withOpacity(UiConstants.opacityLow),
-              blurRadius: UiConstants.elevationXXHigh,
-              offset: const Offset(0, UiConstants.elevationMedium),
+      child: SingleChildScrollView(
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: AppTheme.isMobile(context) ? double.infinity : 600,
+          ),
+          margin: EdgeInsets.symmetric(
+            horizontal: AppTheme.isMobile(context)
+                ? UiConstants.spacingXLarge
+                : UiConstants.spacingXLarge * 3,
+            vertical: screenHeight * 0.15, // Центрируем по вертикали
+          ),
+          decoration: BoxDecoration(
+            color: AppTheme.getCard(context),
+            borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
+            border: Border.all(
+              color: AppTheme.isDarkMode(context)
+                  ? Colors.white.withOpacity(0.08)
+                  : Colors.black.withOpacity(0.06),
+              width: 1.5,
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (type == StateType.loading)
-              PulseAnimation(
-                child: _buildIcon(context),
-              )
-            else
-              _buildIcon(context),
-            const SizedBox(height: UiConstants.spacingLarge),
-            Text(
-              message ?? _getDefaultMessage(),
-              style: TextStyle(
-                color: Colors.white.withOpacity(UiConstants.opacityHigh),
-                fontSize: UiConstants.fontSizeMedium,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            if (type == StateType.error && onRetry != null) ...[
-              const SizedBox(height: UiConstants.spacingLarge),
-              ElevatedButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Повторить'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: UiConstants.spacingXLarge,
-                    vertical: UiConstants.spacingMedium,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(UiConstants.borderRadiusLarge),
-                  ),
-                ),
+            boxShadow: [
+              BoxShadow(
+                color: (AppTheme.isDarkMode(context)
+                        ? Colors.black
+                        : Colors.black)
+                    .withOpacity(AppTheme.isDarkMode(context) ? 0.15 : 0.06),
+                blurRadius: UiConstants.elevationXHigh,
+                offset: const Offset(0, UiConstants.elevationLow),
               ),
             ],
-          ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(UiConstants.borderRadiusXLarge),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(
+                padding: EdgeInsets.all(
+                  AppTheme.isMobile(context)
+                      ? UiConstants.cardPaddingXLarge * 1.5
+                      : UiConstants.cardPaddingXLarge * 2,
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppTheme.primaryBlue.withOpacity(0.08),
+                      AppTheme.primaryBlue.withOpacity(0.03),
+                    ],
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (type == StateType.loading)
+                      _buildLoadingAnimation()
+                    else
+                      _buildIcon(context),
+                    SizedBox(
+                        height: AppTheme.isMobile(context)
+                            ? UiConstants.spacingXLarge * 1.5
+                            : UiConstants.spacingXLarge * 2),
+                    Text(
+                      message ?? _getDefaultMessage(),
+                      style: TextStyle(
+                        color: AppTheme.getTextPrimary(context),
+                        fontSize: AppTheme.isMobile(context) ? 26 : 32,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    if (type == StateType.error && onRetry != null) ...[
+                      const SizedBox(height: UiConstants.spacingXLarge * 1.5),
+                      _buildRetryButton(),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
+  Widget _buildLoadingAnimation() {
+    return const _RotatingIcon();
+  }
+
   Widget _buildIcon(BuildContext context) {
+    final iconSize = AppTheme.isMobile(context) ? 100.0 : 120.0;
+    final innerIconSize = AppTheme.isMobile(context) ? 50.0 : 60.0;
+
     return Container(
-      padding: const EdgeInsets.all(UiConstants.spacingLarge),
+      width: iconSize,
+      height: iconSize,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(UiConstants.opacityMedium),
+        gradient: type == StateType.error
+            ? const LinearGradient(
+                colors: [Color(0xFFf093fb), Color(0xFFf5576c)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : AppTheme.primaryGradient,
         borderRadius: BorderRadius.circular(UiConstants.borderRadiusLarge),
+        boxShadow: [
+          BoxShadow(
+            color: (type == StateType.error
+                    ? const Color(0xFFf5576c)
+                    : AppTheme.primaryBlue)
+                .withOpacity(0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Icon(
         icon ?? Icons.info_outline,
-        size: AppTheme.isMobile(context)
-            ? UiConstants.iconSizeXLarge
-            : UiConstants.iconSizeHuge,
+        size: innerIconSize,
         color: Colors.white,
       ),
     );
   }
 
-  Gradient _getGradient() {
-    switch (type) {
-      case StateType.loading:
-        return const LinearGradient(
-          colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        );
-      case StateType.error:
-        return const LinearGradient(
-          colors: [Color(0xFFf093fb), Color(0xFFf5576c)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        );
-      case StateType.empty:
-        return const LinearGradient(
-          colors: [Color(0xFFfa709a), Color(0xFFfee140)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        );
-    }
-  }
-
-  Color _getShadowColor() {
-    switch (type) {
-      case StateType.loading:
-        return const Color(0xFF667eea);
-      case StateType.error:
-        return const Color(0xFFf5576c);
-      case StateType.empty:
-        return const Color(0xFFfa709a);
-    }
+  Widget _buildRetryButton() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: AppTheme.primaryGradient,
+        borderRadius: BorderRadius.circular(UiConstants.borderRadiusLarge),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryBlue.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onRetry,
+          borderRadius: BorderRadius.circular(UiConstants.borderRadiusLarge),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: UiConstants.spacingXLarge,
+              vertical: UiConstants.spacingMedium,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.refresh, color: Colors.white),
+                SizedBox(width: UiConstants.spacingSmall),
+                Text(
+                  'Повторить',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   String _getDefaultMessage() {
@@ -162,5 +219,68 @@ class StateWidget extends StatelessWidget {
       case StateType.empty:
         return 'Нет данных';
     }
+  }
+}
+
+class _RotatingIcon extends StatefulWidget {
+  const _RotatingIcon();
+
+  @override
+  State<_RotatingIcon> createState() => _RotatingIconState();
+}
+
+class _RotatingIconState extends State<_RotatingIcon>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final iconSize = AppTheme.isMobile(context) ? 100.0 : 120.0;
+    final innerIconSize = AppTheme.isMobile(context) ? 50.0 : 60.0;
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.rotate(
+          angle: _controller.value * 6.28319, // 2 * PI
+          child: Container(
+            width: iconSize,
+            height: iconSize,
+            decoration: BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+              borderRadius:
+                  BorderRadius.circular(UiConstants.borderRadiusLarge),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primaryBlue.withOpacity(0.4),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.sports_soccer,
+              size: innerIconSize,
+              color: Colors.white,
+            ),
+          ),
+        );
+      },
+    );
   }
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -82,7 +84,7 @@ class _HomePageState extends State<HomePage> {
             final filtered = _filterMatchups(matchups);
             resultsCount = filtered.length;
           }
-
+          
           return Padding(
             padding: EdgeInsets.fromLTRB(
               context.horizontalPadding,
@@ -203,9 +205,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       prefixIcon: Container(
                         padding: const EdgeInsets.all(12),
-                        child: Icon(
+                        child: const Icon(
                           Icons.search_rounded,
-                          color: const Color(0xFF1E88E5),
+                          color: Color(0xFF1E88E5),
                           size: 26,
                         ),
                       ),
@@ -477,6 +479,9 @@ class _HomePageState extends State<HomePage> {
         content: Text('Загружено $matchesCount матчей'),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
       ),
     );
   }
@@ -487,6 +492,9 @@ class _HomePageState extends State<HomePage> {
         content: Text('Ошибка: $message'),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
       ),
     );
   }

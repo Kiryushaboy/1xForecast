@@ -263,7 +263,7 @@ class AppTheme {
   // Адаптивные паддинги - более воздушные
   static double getHorizontalPadding(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    if (width < mobileBreakpoint) return 20;
+    if (width < mobileBreakpoint) return 30;
     if (width < tabletBreakpoint) return 32;
     if (width < desktopBreakpoint) return 48;
     return 64;

@@ -1,9 +1,14 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/ui_constants.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../domain/services/bet_analysis_service.dart';
+import '../bloc/match_bloc.dart';
+import 'bet_recommendation_widget.dart';
+import 'team_label.dart';
 
 class MatchupCard extends BaseCard {
   final String homeTeam;
@@ -27,16 +32,47 @@ class MatchupCard extends BaseCard {
         offset: Offset(0, UiConstants.spacingXLarge * (1 - value)),
         child: Opacity(opacity: value, child: child),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
         children: [
-          _buildTeamWithIcon(context, homeTeam, true),
-          _buildVsBadge(),
-          _buildTeamWithIcon(context, awayTeam, false),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TeamLabel(teamName: homeTeam),
+              _buildVsBadge(),
+              TeamLabel(teamName: awayTeam, iconFirst: false),
+            ],
+          ),
+          _buildRecommendation(context),
         ],
       ),
     );
+  }
+
+  Widget _buildRecommendation(BuildContext context) {
+    final state = context.watch<MatchBloc>().state;
+
+    if (state is! MatchLoaded) {
+      return const SizedBox.shrink();
+    }
+
+    // Получаем матчи для этого противостояния
+    final matches = state.matches
+        .where(
+            (match) => match.homeTeam == homeTeam && match.awayTeam == awayTeam)
+        .toList();
+
+    if (matches.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final analysisService = BetAnalysisService();
+    final recommendation = analysisService.analyzeBestBet(
+      matches,
+      awayTeam, // team1 - гости
+      homeTeam, // team2 - хозяева
+    );
+
+    return BetRecommendationWidget(recommendation: recommendation);
   }
 
   @override
@@ -74,96 +110,6 @@ class MatchupCard extends BaseCard {
             child: buildContent(context),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTeamWithIcon(
-      BuildContext context, String teamName, bool isHome) {
-    final words = teamName.split(' ');
-
-    return Expanded(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (isHome) ...[
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                gradient: AppTheme.primaryGradient,
-                borderRadius:
-                    BorderRadius.circular(UiConstants.borderRadiusMedium),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.primaryBlue.withOpacity(0.25),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.sports_soccer,
-                  size: 28,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                words.join('\n'),
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.getTextPrimary(context),
-                  height: 1.3,
-                ),
-                textAlign: TextAlign.left,
-                softWrap: true,
-              ),
-            ),
-          ] else ...[
-            Expanded(
-              child: Text(
-                words.join('\n'),
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.getTextPrimary(context),
-                  height: 1.3,
-                ),
-                textAlign: TextAlign.right,
-                softWrap: true,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                gradient: AppTheme.primaryGradient,
-                borderRadius:
-                    BorderRadius.circular(UiConstants.borderRadiusMedium),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.primaryBlue.withOpacity(0.25),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.sports_soccer,
-                  size: 28,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        ],
       ),
     );
   }
